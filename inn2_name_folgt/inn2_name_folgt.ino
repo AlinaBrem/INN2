@@ -6,6 +6,7 @@
 #include "linked_list.cpp"
 #include "map.cpp"
 #include "player.h"
+#include "enemy.h"
 
 #define FRAME_PERIOD 2
 
@@ -17,6 +18,7 @@ LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
 Point *start_pos = new Point(35, 30);
 
 Player *player = new Player(start_pos->x, start_pos->y, 8, 7, 60);
+Enemy *enemy = new Enemy(40, 8, 8, 8, 60, Point(64,48));
 
 Map mymap = Map::load_map1(&sprite_list);
 
@@ -24,12 +26,14 @@ void setup()
 {
 	gb.begin();
 	sprite_list.append_value((Sprite *)player);
+  sprite_list.append_value((Sprite *)enemy);
 }
 
 void loop()
 {
-	while (!gb.update())
-		gb.display.clear(/*RED*/);
+  
+  gb.waitForUpdate();
+  gb.display.clear();
 
 	if (gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD))
 	{
@@ -47,7 +51,7 @@ void loop()
 	{
 		player->move_right();
 	}
-
+  enemy->move();
 	if (gb.buttons.repeat(BUTTON_B, 0))
 	{
 		gb.display.drawImage(0, 0, my_img_buf);
@@ -58,7 +62,6 @@ void loop()
 	else
 	{	
 		draw();
-
 		// player collision detection with 'solid' objects
 		Point *collision_points = player->get_collision_points();
 		for (int i = 0; i < NUM_COLLISION_POINTS; i++)

@@ -9,6 +9,28 @@ public:
     Point(int x, int y) : x(x), y(y) {}
     int x;
     int y;
+    bool operator == (const Point& other)
+    {
+       return (this->x == other.x && this->y == other.y);
+    }
+    bool operator != (const Point& other)
+    {
+      return ! (*this==other);
+    }
+    Point operator + (const Point & other)
+    {
+      Point temp(this->x, this->y);
+      temp.x += other.x;
+      temp.y += other.y;
+      return temp;
+    }
+    Point operator - (const Point & other)
+    {
+      Point temp(this->x, this->y);
+      temp.x -= other.x;
+      temp.y -= other.y;
+      return temp;
+    }
 };
 
 class Sprite
@@ -16,17 +38,15 @@ class Sprite
 protected:
     int tex_id;
     Point position;
-    Point i_position;
     Point i_dimension;
     Sprite(int x, int y, int w, int h, int t) : position(Point(x, y)),
                                                 i_dimension(Point(w, h)),
-                                                tex_id(t),
-                                                i_position(Point((t % 10) * 8, (t / 10) * 8)){};
+                                                tex_id(t){};
 
 public:
     void draw()
     {
-        gb.display.drawImage(position.x, position.y, my_img_buf, i_position.x, i_position.y, i_dimension.x, i_dimension.y);
+        gb.display.drawImage(position.x, position.y, my_img_buf, (tex_id % 10) * 8, (tex_id / 10) * 8, i_dimension.x, i_dimension.y); //geändert damit graphiken angepasst werden können (animationen)
     }
 
     static Sprite *new_sprite(int x, int y, int t)
