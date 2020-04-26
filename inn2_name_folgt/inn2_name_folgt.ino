@@ -59,14 +59,14 @@ void loop()
 	{	
 		draw();
 
-		// player collision detection
+		// player collision detection with 'solid' objects
 		Point *collision_points = player->get_collision_points();
 		for (int i = 0; i < NUM_COLLISION_POINTS; i++)
 		{
 			// check if player is colliding with something
 			if (mymap.solid_at_position(collision_points[i]))
 			{
-        // set is_colliding
+        		// set is_colliding
 				player->set_is_colliding(true, i);
 			}
 		}
