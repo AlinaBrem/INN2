@@ -27,6 +27,26 @@ enum Collision_Points : int
     middle_right_back,
 };
 
+enum Directions : int
+{
+    move_up,
+    move_down,
+    move_left,
+    move_right
+};
+
+enum Textures_Ids : int
+{
+    move_up_start = 61,
+    move_down_start = 71,
+    move_left_start = 76,
+    move_right_start = 66,
+    idle_up_start = 60,
+    idle_down_start = 70,
+    idle_left_start = 75,
+    idle_right_start = 65
+};
+
 class Player : Sprite
 {
 private:
@@ -37,6 +57,9 @@ private:
     
     int health;
     bool is_dead;
+
+    int frame_counter;
+    int number_animation;
 
     bool is_colliding_enemy;
 
@@ -56,8 +79,10 @@ private:
     bool is_colliding_middle_left_center;
     bool is_colliding_middle_left_back;
 
+    int current_direction;
+
     // set all is_colliding variables to false
-    void reset_colliding_points();
+    void reset_collision_points();
 
 public:
     Player(int x, int y, int w, int h, int t);
@@ -85,7 +110,13 @@ public:
     // move up -> x--
     void move_left();
 
-    // debug function :D
+    // play the idle animation
+    void idle();
+
+    // handles the walking animation in all directions
+    void play_walk_animation(int start_texture_id);
+
+    // debug function
     void print_collision_points();
 };
 

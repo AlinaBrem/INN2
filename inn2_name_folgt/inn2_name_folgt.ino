@@ -31,10 +31,9 @@ void setup()
 
 void loop()
 {
-  
   gb.waitForUpdate();
   gb.display.clear();
-
+  
 	if (gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD))
 	{
 		player->move_up();
@@ -51,6 +50,7 @@ void loop()
 	{
 		player->move_right();
 	}
+
   enemy->move();
 	if (gb.buttons.repeat(BUTTON_B, 0))
 	{
@@ -69,13 +69,21 @@ void loop()
 			// check if player is colliding with something
 			if (mymap.solid_at_position(collision_points[i]))
 			{
-        		// set is_colliding
+        // set is_colliding
 				player->set_is_colliding(true, i);
 			}
 		}
 
   	delete collision_points;
   	collision_points = nullptr;
+	
+	  if(!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD)
+        && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD)
+        && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD)
+        && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD))
+    {
+      player->idle();
+    }
 	}
 }
 
