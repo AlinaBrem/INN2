@@ -61,6 +61,8 @@ private:
     int frame_counter;
     int number_animation;
 
+    int has_key;
+
     bool is_colliding_enemy;
 
     bool is_colliding_front_left;
@@ -97,6 +99,9 @@ public:
 
     // sets a specific is_colliding variable based on an index
     void set_is_colliding(bool value, int i);
+
+    // take key and set has_key value to true
+    void take_key();
 
     // move up -> y--
     void move_up();

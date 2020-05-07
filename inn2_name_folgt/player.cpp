@@ -10,7 +10,7 @@ Player::Player(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
     this->is_colliding_enemy = false;
     this->frame_counter = 0;
     this->number_animation = 0;
-
+    this->has_key = false;
     this->current_direction = 0;
 
     this->reset_collision_points();
@@ -202,6 +202,11 @@ void Player::idle()
         default:
             break;
     }
+}
+
+void Player::take_key()
+{
+    this->has_key = true;
 }
 
 void Player::play_walk_animation(int start_texture_id)

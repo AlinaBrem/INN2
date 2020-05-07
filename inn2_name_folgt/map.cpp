@@ -7,7 +7,10 @@
 enum TileType
 {
     solid,
-    not_solid
+    not_solid,
+    key,
+    computer,
+    door
 };
 
 class Map
@@ -115,5 +118,35 @@ public:
         return false;
     }
     ~Map(){};
+
+    // inserts a new object at the given position
+    // and sets the type in the tile_type_grid
+    void insert_type_at(Point position, TileType type)
+    {
+      int x = position.x / 8;
+      int y = position.y / 8;
+
+      this->tile_type_grid[x][y] = type;
+    }
+
+    // returns true if a concrete type is at a given position
+    // returns false if theres any ohter type
+    bool is_type_at(Point position, TileType type)
+    {
+        int x = position.x / 8;
+        int y = position.y / 8;
+
+        return this->tile_type_grid[x][y] == type;
+    }
+
+    // delete type at a given position
+    // also deletes the sprite from the LinkedList
+    void delete_type_at(Point position, LinkedList<Sprite *> *ll, int i)
+    {
+        if(ll->try_delete(i))
+        {
+            this->insert_type_at(position, TileType::not_solid);
+        }
+    }
 };
 #endif
