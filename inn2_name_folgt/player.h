@@ -11,7 +11,7 @@
 //  *    P    *
 //  *         *
 //    *  *  *
-enum CollisionPoints : int
+enum class CollisionPoints
 {
     front_left,
     front_right,
@@ -27,15 +27,15 @@ enum CollisionPoints : int
     middle_right_back,
 };
 
-enum Directions : int
+enum class Direction
 {
-    move_up,
-    move_down,
-    move_left,
-    move_right
+    up,
+    down,
+    left,
+    right
 };
 
-enum PlayerTexturesIds : int
+enum class PlayerTextureId
 {
     move_up_start = 61,
     move_down_start = 71,
@@ -81,7 +81,7 @@ private:
     bool is_colliding_middle_left_center;
     bool is_colliding_middle_left_back;
 
-    int current_direction;
+    Direction direction;
 
     // set all is_colliding variables to false
     void reset_collision_points();
@@ -104,9 +104,6 @@ public:
     // sets a specific is_colliding variable based on an index
     void set_is_colliding(bool value, int i);
 
-    // take key and set has_key value to true
-    void take_key();
-
     // move up -> y--
     void move_up();
 
@@ -123,7 +120,7 @@ public:
     void idle();
 
     // handles the walking animation in all directions
-    void play_walk_animation(int start_texture_id);
+    void play_walk_animation(PlayerTextureId start_texture_id);
 
     // debug function
     void print_collision_points();

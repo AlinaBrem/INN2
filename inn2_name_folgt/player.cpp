@@ -11,7 +11,7 @@ Player::Player(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
     this->frame_counter = 0;
     this->number_animation = 0;
     this->has_key = false;
-    this->current_direction = 0;
+    this->direction = Direction::up;
 
     this->reset_collision_points();
 };
@@ -55,7 +55,7 @@ int Player::get_health()
 
 void Player::set_is_colliding(bool value, int i)
 {
-    switch (i)
+    switch ((CollisionPoints)i)
     {
     case CollisionPoints::front_left:
         this->is_colliding_front_left = true;
@@ -134,9 +134,9 @@ void Player::move_up()
     if (!this->is_colliding_front_left && !this->is_colliding_front_middle && !this->is_colliding_front_right)
     {
         this->position.y--;
-        this->current_direction = Directions::move_up;
+        this->direction = Direction::up;
 
-        this->play_walk_animation(PlayerTexturesIds::move_up_start);
+        this->play_walk_animation(PlayerTextureId::move_up_start);
         this->reset_collision_points();
     }
 }
@@ -146,9 +146,9 @@ void Player::move_down()
     if (!this->is_colliding_back_left && !this->is_colliding_back_middle && !this->is_colliding_back_right)
     {
         this->position.y++;
-        this->current_direction = Directions::move_down;
+        this->direction = Direction::down;
 
-        this->play_walk_animation(PlayerTexturesIds::move_down_start);
+        this->play_walk_animation(PlayerTextureId::move_down_start);
         this->reset_collision_points();
     }
 }
@@ -158,9 +158,9 @@ void Player::move_right()
     if (!this->is_colliding_middle_right_front && !this->is_colliding_middle_right_center && !this->is_colliding_middle_right_back)
     {
         this->position.x++;
-        this->current_direction = Directions::move_right;
+        this->direction = Direction::right;
 
-        this->play_walk_animation(PlayerTexturesIds::move_right_start);
+        this->play_walk_animation(PlayerTextureId::move_right_start);
         this->reset_collision_points();
     }
 }
@@ -170,31 +170,31 @@ void Player::move_left()
     if (!this->is_colliding_middle_left_front && !this->is_colliding_middle_left_center && !this->is_colliding_middle_left_back)
     {
         this->position.x--;
-        this->current_direction = Directions::move_left;
+        this->direction = Direction::left;
 
-        this->play_walk_animation(PlayerTexturesIds::move_left_start);
+        this->play_walk_animation(PlayerTextureId::move_left_start);
         this->reset_collision_points();
     }
 }
 
 void Player::idle()
 {
-    switch (this->current_direction)
+    switch (this->direction)
     {
-    case Directions::move_up:
-        this->tex_id = PlayerTexturesIds::idle_up_start;
+    case Direction::up:
+        this->tex_id = (int)PlayerTextureId::idle_up_start;
         break;
 
-    case Directions::move_down:
-        this->tex_id = PlayerTexturesIds::idle_down_start;
+    case Direction::down:
+        this->tex_id = (int)PlayerTextureId::idle_down_start;
         break;
 
-    case Directions::move_left:
-        this->tex_id = PlayerTexturesIds::idle_left_start;
+    case Direction::left:
+        this->tex_id = (int)PlayerTextureId::idle_left_start;
         break;
 
-    case Directions::move_right:
-        this->tex_id = PlayerTexturesIds::idle_right_start;
+    case Direction::right:
+        this->tex_id = (int)PlayerTextureId::idle_right_start;
         break;
 
     default:
@@ -202,14 +202,9 @@ void Player::idle()
     }
 }
 
-void Player::take_key()
+void Player::play_walk_animation(PlayerTextureId start_texture_id)
 {
-    this->has_key = true;
-}
-
-void Player::play_walk_animation(int start_texture_id)
-{
-    this->tex_id = start_texture_id;
+    this->tex_id = (int)start_texture_id;
 
     if (this->number_animation == 2)
     {

@@ -3,10 +3,10 @@
 #ifndef DOOR_H
 #define DOOR_H
 
-enum DoorTexturesIds : int
+enum class DoorTextureId 
 {
-  is_open = 49,
-  is_closed = 48 
+  open = 49,
+  closed = 48 
 };
 
 class Door : Sprite
