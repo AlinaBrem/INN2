@@ -20,10 +20,10 @@ private:
         }
     };
 
-    Node *start;
-    Node *end;
+    Node *end = nullptr;
 
 public:
+    Node *start = nullptr;
     class Iterator
     {
     private:

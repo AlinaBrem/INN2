@@ -31,6 +31,7 @@ Door *test_door = new Door(door_pos->x, door_pos->y, 8, 8, 48);
 Player *player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
 
 Map mymap = Map::load_map1(&sprite_list);
+uint8_t * path_test = NULL; 
 
 void setup()
 {
@@ -44,6 +45,7 @@ void setup()
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
 	mymap.insert_type_at(*door_pos, TileType::door);
+  path_test =  mymap.get_path_grid(Point(20,10));
 }
 
 void loop()
@@ -75,6 +77,12 @@ void loop()
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
+    /* // path test
+    for (int i = 0; i < 80; i++)
+    {
+      gb.display.setCursor(8*(i%10), 8*(i/10));
+      gb.display.print(path_test[i]);
+    }*/
 	}
 	else
 	{
