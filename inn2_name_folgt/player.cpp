@@ -19,8 +19,7 @@ Player::Player(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
 Point *Player::get_collision_points()
 {
     // get collision points
-    auto *points = new Point[NUM_COLLISION_POINTS]
-    {
+    auto *points = new Point[NUM_COLLISION_POINTS]{
         // front_left
         Point(this->position.x + 1, this->position.y),
         // front_middle
@@ -44,8 +43,7 @@ Point *Player::get_collision_points()
         // middle_right_center
         Point(this->position.x + this->width, this->position.y + this->height / 2),
         // middle_right_back
-        Point(this->position.x + this->width, this->position.y + this->height - 1)
-    };
+        Point(this->position.x + this->width, this->position.y + this->height - 1)};
 
     return points;
 }
@@ -59,56 +57,56 @@ void Player::set_is_colliding(bool value, int i)
 {
     switch (i)
     {
-        case Collision_Points::front_left:
-            this->is_colliding_front_left = true;
-            break;
+    case CollisionPoints::front_left:
+        this->is_colliding_front_left = true;
+        break;
 
-        case Collision_Points::front_right:
-            this->is_colliding_front_right = true;
-            break;
+    case CollisionPoints::front_right:
+        this->is_colliding_front_right = true;
+        break;
 
-        case Collision_Points::front_middle:
-            this->is_colliding_front_middle = true;
-            break;
+    case CollisionPoints::front_middle:
+        this->is_colliding_front_middle = true;
+        break;
 
-        case Collision_Points::back_left:
-            this->is_colliding_back_left = true;
-            break;
+    case CollisionPoints::back_left:
+        this->is_colliding_back_left = true;
+        break;
 
-        case Collision_Points::back_right:
-            this->is_colliding_back_right = true;
-            break;
+    case CollisionPoints::back_right:
+        this->is_colliding_back_right = true;
+        break;
 
-        case Collision_Points::back_middle:
-            this->is_colliding_back_middle = true;
-            break;
+    case CollisionPoints::back_middle:
+        this->is_colliding_back_middle = true;
+        break;
 
-        case Collision_Points::middle_left_front:
-            this->is_colliding_middle_left_front = true;
-            break;
+    case CollisionPoints::middle_left_front:
+        this->is_colliding_middle_left_front = true;
+        break;
 
-        case Collision_Points::middle_left_center:
-            this->is_colliding_middle_left_center = true;
-            break;
+    case CollisionPoints::middle_left_center:
+        this->is_colliding_middle_left_center = true;
+        break;
 
-        case Collision_Points::middle_left_back:
-            this->is_colliding_middle_left_back = true;
-            break;
+    case CollisionPoints::middle_left_back:
+        this->is_colliding_middle_left_back = true;
+        break;
 
-        case Collision_Points::middle_right_front:
-            this->is_colliding_middle_right_front = true;
-            break;
+    case CollisionPoints::middle_right_front:
+        this->is_colliding_middle_right_front = true;
+        break;
 
-        case Collision_Points::middle_right_center:
-            this->is_colliding_middle_right_center = true;
-            break;
+    case CollisionPoints::middle_right_center:
+        this->is_colliding_middle_right_center = true;
+        break;
 
-        case Collision_Points::middle_right_back:
-            this->is_colliding_middle_right_back = true;
-            break;
+    case CollisionPoints::middle_right_back:
+        this->is_colliding_middle_right_back = true;
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -121,7 +119,7 @@ void Player::reset_collision_points()
     this->is_colliding_back_left = false;
     this->is_colliding_back_right = false;
     this->is_colliding_back_middle = false;
-    
+
     this->is_colliding_middle_right_front = false;
     this->is_colliding_middle_right_center = false;
     this->is_colliding_middle_right_back = false;
@@ -138,7 +136,7 @@ void Player::move_up()
         this->position.y--;
         this->current_direction = Directions::move_up;
 
-        this->play_walk_animation(Textures_Ids::move_up_start);
+        this->play_walk_animation(PlayerTexturesIds::move_up_start);
         this->reset_collision_points();
     }
 }
@@ -150,7 +148,7 @@ void Player::move_down()
         this->position.y++;
         this->current_direction = Directions::move_down;
 
-        this->play_walk_animation(Textures_Ids::move_down_start);
+        this->play_walk_animation(PlayerTexturesIds::move_down_start);
         this->reset_collision_points();
     }
 }
@@ -162,7 +160,7 @@ void Player::move_right()
         this->position.x++;
         this->current_direction = Directions::move_right;
 
-        this->play_walk_animation(Textures_Ids::move_right_start);
+        this->play_walk_animation(PlayerTexturesIds::move_right_start);
         this->reset_collision_points();
     }
 }
@@ -174,33 +172,33 @@ void Player::move_left()
         this->position.x--;
         this->current_direction = Directions::move_left;
 
-        this->play_walk_animation(Textures_Ids::move_left_start);
+        this->play_walk_animation(PlayerTexturesIds::move_left_start);
         this->reset_collision_points();
     }
 }
 
 void Player::idle()
 {
-    switch(this->current_direction)
+    switch (this->current_direction)
     {
-        case Directions::move_up:
-            this->tex_id = Textures_Ids::idle_up_start;
-            break;
+    case Directions::move_up:
+        this->tex_id = PlayerTexturesIds::idle_up_start;
+        break;
 
-        case Directions::move_down:
-            this->tex_id = Textures_Ids::idle_down_start;
-            break;
+    case Directions::move_down:
+        this->tex_id = PlayerTexturesIds::idle_down_start;
+        break;
 
-        case Directions::move_left:
-            this->tex_id = Textures_Ids::idle_left_start;
-            break;
+    case Directions::move_left:
+        this->tex_id = PlayerTexturesIds::idle_left_start;
+        break;
 
-        case Directions::move_right:
-            this->tex_id = Textures_Ids::idle_right_start;
-            break;
+    case Directions::move_right:
+        this->tex_id = PlayerTexturesIds::idle_right_start;
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -213,11 +211,11 @@ void Player::play_walk_animation(int start_texture_id)
 {
     this->tex_id = start_texture_id;
 
-    if(this->number_animation == 2)
+    if (this->number_animation == 2)
     {
         this->tex_id += 1;
     }
-    else if(this->number_animation == 1 || this->number_animation == 3)
+    else if (this->number_animation == 1 || this->number_animation == 3)
     {
         this->tex_id += 2;
     }
@@ -229,39 +227,54 @@ void Player::print_collision_points()
     gb.display.setColor(GREEN);
 
     // front_left
-    gb.display.drawLine(this->position.x + 1, this->position.y, 
+    gb.display.drawLine(this->position.x + 1, this->position.y,
                         this->position.x + 1, this->position.y);
     // front_middle
-    gb.display.drawLine(this->position.x + this->width / 2, this->position.y, 
+    gb.display.drawLine(this->position.x + this->width / 2, this->position.y,
                         this->position.x + this->width / 2, this->position.y);
     // front_right
-    gb.display.drawLine(this->position.x + this->width - 1, this->position.y, 
+    gb.display.drawLine(this->position.x + this->width - 1, this->position.y,
                         this->position.x + this->width - 1, this->position.y);
     // back_left
-    gb.display.drawLine(this->position.x + 1, this->position.y + this->height, 
+    gb.display.drawLine(this->position.x + 1, this->position.y + this->height,
                         this->position.x + 1, this->position.y + this->height);
     // back_middle
     gb.display.drawLine(this->position.x + this->width / 2, this->position.y + this->height,
                         this->position.x + this->width / 2, this->position.y + this->height);
     // back_right
-    gb.display.drawLine(this->position.x + this->width - 1, this->position.y + this->height, 
+    gb.display.drawLine(this->position.x + this->width - 1, this->position.y + this->height,
                         this->position.x + this->width - 1, this->position.y + this->height);
     // middle_left_front
-    gb.display.drawLine(this->position.x, this->position.y + 1, 
+    gb.display.drawLine(this->position.x, this->position.y + 1,
                         this->position.x, this->position.y + 1);
     // middle_left_center
-    gb.display.drawLine(this->position.x, this->position.y + this->height / 2, 
+    gb.display.drawLine(this->position.x, this->position.y + this->height / 2,
                         this->position.x, this->position.y + this->height / 2);
     // middle_left_back
-    gb.display.drawLine(this->position.x, this->position.y + this->height - 1, 
+    gb.display.drawLine(this->position.x, this->position.y + this->height - 1,
                         this->position.x, this->position.y + this->height - 1);
     // middle_right_front
-    gb.display.drawLine(this->position.x + this->width, this->position.y + 1, 
+    gb.display.drawLine(this->position.x + this->width, this->position.y + 1,
                         this->position.x + this->width, this->position.y + 1);
     // middle_right_center
     gb.display.drawLine(this->position.x + this->width, this->position.y + this->height / 2,
                         this->position.x + this->width, this->position.y + this->height / 2);
     // middle_right_back
-    gb.display.drawLine(this->position.x + this->width, this->position.y + this->height - 1, 
+    gb.display.drawLine(this->position.x + this->width, this->position.y + this->height - 1,
                         this->position.x + this->width, this->position.y + this->height - 1);
+}
+
+void Player::print(String message)
+{
+    gb.display.println(message);
+}
+
+bool Player::get_has_key()
+{
+    return this->has_key;
+}
+
+void Player::set_has_key(bool value)
+{
+    this->has_key = value;
 }

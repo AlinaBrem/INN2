@@ -11,7 +11,7 @@
 //  *    P    *
 //  *         *
 //    *  *  *
-enum Collision_Points : int
+enum CollisionPoints : int
 {
     front_left,
     front_right,
@@ -35,7 +35,7 @@ enum Directions : int
     move_right
 };
 
-enum Textures_Ids : int
+enum PlayerTexturesIds : int
 {
     move_up_start = 61,
     move_down_start = 71,
@@ -54,7 +54,7 @@ private:
     int height;
 
     int speed;
-    
+
     int health;
     bool is_dead;
 
@@ -91,6 +91,10 @@ public:
 
     ~Player() = default;
 
+    void set_has_key(bool value);
+
+    bool get_has_key();
+
     // returns a pointer with the current coordinates(x,y) of all 8 collision points
     Point *get_collision_points();
 
@@ -123,6 +127,9 @@ public:
 
     // debug function
     void print_collision_points();
+
+    // displays a text (Debug only)
+    void print(String message);
 };
 
 #endif //PLAYER_H

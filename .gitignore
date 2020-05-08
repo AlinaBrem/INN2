@@ -12,3 +12,4 @@
 
 # Gamebuino
 *.bin
+build/*

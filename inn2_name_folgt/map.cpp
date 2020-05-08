@@ -4,6 +4,8 @@
 #ifndef MAP
 #define MAP
 
+#define FACTOR 8
+
 enum TileType
 {
     solid,
@@ -20,8 +22,8 @@ private:
     TileType **tile_type_grid;
     Map(int w, int h) : dimensions(w, h)
     {
-        int grid_width = dimensions.x / 8;
-        int grid_height = dimensions.y / 8;
+        int grid_width = dimensions.x / FACTOR;
+        int grid_height = dimensions.y / FACTOR;
 
         tile_type_grid = (TileType **)malloc(sizeof(TileType *) * grid_width);
         for (int i = 0; i < grid_width; i++)
@@ -109,8 +111,8 @@ public:
     }
     bool solid_at_position(Point p)
     {
-        int x = p.x / 8;
-        int y = p.y / 8;
+        int x = p.x / FACTOR;
+        int y = p.y / FACTOR;
         if (tile_type_grid[x][y] == solid)
         {
             return true;
@@ -123,8 +125,8 @@ public:
     // and sets the type in the tile_type_grid
     void insert_type_at(Point position, TileType type)
     {
-      int x = position.x / 8;
-      int y = position.y / 8;
+      int x = position.x / FACTOR;
+      int y = position.y / FACTOR;
 
       this->tile_type_grid[x][y] = type;
     }
@@ -133,8 +135,8 @@ public:
     // returns false if theres any ohter type
     bool is_type_at(Point position, TileType type)
     {
-        int x = position.x / 8;
-        int y = position.y / 8;
+        int x = position.x / FACTOR;
+        int y = position.y / FACTOR;
 
         return this->tile_type_grid[x][y] == type;
     }

@@ -16,30 +16,30 @@
 
 LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
 
-//WonderWall *ww = new WonderWall(35, 30, 8, 8, 23);
-
-// start position of the player
+// start position of all objects
 Point *start_pos = new Point(35, 30);
 Point *key_pos = new Point(35, 40);
-Point *computer_pos = new Point(50, 25);
-Point *door_pos = new Point(50, 20);
+Point *computer_pos = new Point(8, 8);
+Point *door_pos = new Point(24, 24);
 
-Enemy *enemy = new Enemy(40, 8, 8, 8, 60, Point(64,48));
-Player *player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
+Enemy *enemy = new Enemy(40, 8, 8, 8, 60, Point(64, 48));
+
 Key *test_key = new Key(key_pos->x, key_pos->y, 8, 8, 44);
 Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, 8, 8, 30);
 Door *test_door = new Door(door_pos->x, door_pos->y, 8, 8, 48);
+
+Player *player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
 
 Map mymap = Map::load_map1(&sprite_list);
 
 void setup()
 {
 	gb.begin();
-	sprite_list.append_value((Sprite *)player);
-	sprite_list.append_value((Sprite *)enemy);
-  sprite_list.append_value((Sprite *)test_key);
-	sprite_list.append_value((Sprite *)test_computer);
-	sprite_list.append_value((Sprite *)test_door);
+	sprite_list.append_value((Sprite *)enemy);				 // linked list index = 37
+	sprite_list.append_value((Sprite *)test_key);			 // linked list index = 38
+	sprite_list.append_value((Sprite *)test_door);		 // linked list index = 39
+	sprite_list.append_value((Sprite *)player);				 // linked list index = 40
+	sprite_list.append_value((Sprite *)test_computer); // linked list index = 41
 
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
@@ -48,9 +48,9 @@ void setup()
 
 void loop()
 {
-  gb.waitForUpdate();
-  gb.display.clear();
-  
+	gb.waitForUpdate();
+	gb.display.clear();
+
 	if (gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD))
 	{
 		player->move_up();
@@ -68,7 +68,7 @@ void loop()
 		player->move_right();
 	}
 
-  enemy->move();
+	enemy->move();
 	if (gb.buttons.repeat(BUTTON_B, 0))
 	{
 		gb.display.drawImage(0, 0, my_img_buf);
@@ -77,8 +77,8 @@ void loop()
 		gb.display.println(ram);
 	}
 	else
-	{	
-    draw();
+	{
+		draw();
 
 		// player collision detection with 'solid' objects
 		Point *collision_points = player->get_collision_points();
@@ -87,36 +87,45 @@ void loop()
 			// check if player is colliding with something
 			if (mymap.is_type_at(collision_points[i], TileType::solid))
 			{
-        // set is_colliding
+				// set is_colliding
 				player->set_is_colliding(true, i);
 			}
 
 			if (mymap.is_type_at(collision_points[i], TileType::key))
 			{
-				mymap.delete_type_at(*key_pos, &sprite_list, 39);
+				player->set_has_key(true);
+
+				// delete key from the linked list
+				mymap.delete_type_at(*key_pos, &sprite_list, 38);
 			}
 
 			if (mymap.is_type_at(collision_points[i], TileType::computer))
 			{
-				mymap.delete_type_at(*computer_pos, &sprite_list, 40);
+				player->set_is_colliding(true, i);
 			}
 
+			// check if player is colliding with a door
 			if (mymap.is_type_at(collision_points[i], TileType::door))
 			{
-				mymap.delete_type_at(*door_pos, &sprite_list, 41);
+				if (test_door->get_is_locked())
+				{
+					player->set_is_colliding(true, i);
+
+					if (gb.buttons.pressed(BUTTON_A) && player->get_has_key())
+					{
+						test_door->set_is_locked(false);
+					}
+				}
 			}
 		}
 
-  	delete collision_points;
-  	collision_points = nullptr;
-	
-	  if(!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD)
-        && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD)
-        && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD)
-        && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD))
-    {
-      player->idle();
-    }
+		delete collision_points;
+		collision_points = nullptr;
+
+		if (!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD))
+		{
+			player->idle();
+		}
 	}
 }
 
