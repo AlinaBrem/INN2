@@ -259,7 +259,20 @@ void Player::print_collision_points()
                         this->position.x + this->width, this->position.y + this->height - 1);
 }
 
-void Player::print(String message)
+void Player::print_position()
+{
+    gb.display.print("x: ");
+    gb.display.println(this->position.x);
+    gb.display.print("y: ");
+    gb.display.println(this->position.y);
+
+    gb.display.print("x_grid: ");
+    gb.display.println(this->position.x / 8);
+    gb.display.print("y_grid: ");
+    gb.display.println(this->position.y / 8);
+}
+
+void Player::print_message(String message)
 {
     gb.display.println(message);
 }

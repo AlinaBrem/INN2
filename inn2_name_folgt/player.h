@@ -83,9 +83,6 @@ private:
 
     Direction direction;
 
-    // set all is_colliding variables to false
-    void reset_collision_points();
-
 public:
     Player(int x, int y, int w, int h, int t);
 
@@ -122,11 +119,17 @@ public:
     // handles the walking animation in all directions
     void play_walk_animation(PlayerTextureId start_texture_id);
 
+    // set all is_colliding variables to false
+    void reset_collision_points();
+
     // debug function
     void print_collision_points();
 
-    // displays a text (Debug only)
-    void print(String message);
+    // displays position of the player (Debug only)
+    void print_position();
+
+    // displays a message (Debug only)
+    void print_message(String message);
 };
 
 #endif //PLAYER_H

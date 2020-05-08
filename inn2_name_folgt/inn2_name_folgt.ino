@@ -25,13 +25,13 @@ Point *door_pos = new Point(24, 24);
 Enemy *enemy = new Enemy(40, 8, 8, 8, 60, Point(64, 48));
 
 Key *test_key = new Key(key_pos->x, key_pos->y, 8, 8, 44);
-Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, 8, 8, 30);
+Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, 8, 8, 30, 1);
 Door *test_door = new Door(door_pos->x, door_pos->y, 8, 8, 48);
 
-Player *player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
+Player *test_player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
 
 Map mymap = Map::load_map1(&sprite_list);
-uint8_t * path_test = NULL; 
+uint8_t *path_test = NULL;
 
 void setup()
 {
@@ -39,13 +39,13 @@ void setup()
 	sprite_list.append_value((Sprite *)enemy);				 // linked list index = 37
 	sprite_list.append_value((Sprite *)test_key);			 // linked list index = 38
 	sprite_list.append_value((Sprite *)test_door);		 // linked list index = 39
-	sprite_list.append_value((Sprite *)player);				 // linked list index = 40
+	sprite_list.append_value((Sprite *)test_player);	 // linked list index = 40
 	sprite_list.append_value((Sprite *)test_computer); // linked list index = 41
 
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
 	mymap.insert_type_at(*door_pos, TileType::door);
-  path_test =  mymap.get_path_grid(Point(20,10));
+	path_test = mymap.get_path_grid(Point(20, 10));
 }
 
 void loop()
@@ -55,19 +55,19 @@ void loop()
 
 	if (gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD))
 	{
-		player->move_up();
+		test_player->move_up();
 	}
 	else if (gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD))
 	{
-		player->move_down();
+		test_player->move_down();
 	}
 	else if (gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD))
 	{
-		player->move_left();
+		test_player->move_left();
 	}
 	else if (gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD))
 	{
-		player->move_right();
+		test_player->move_right();
 	}
 
 	enemy->move();
@@ -77,7 +77,7 @@ void loop()
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
-    /* // path test
+		/* // path test
     for (int i = 0; i < 80; i++)
     {
       gb.display.setCursor(8*(i%10), 8*(i/10));
@@ -87,21 +87,20 @@ void loop()
 	else
 	{
 		draw();
-
 		// player collision detection with 'solid' objects
-		Point *collision_points = player->get_collision_points();
+		Point *collision_points = test_player->get_collision_points();
 		for (int i = 0; i < NUM_COLLISION_POINTS; i++)
 		{
 			// check if player is colliding with something
 			if (mymap.is_type_at(collision_points[i], TileType::solid))
 			{
 				// set is_colliding
-				player->set_is_colliding(true, i);
+				test_player->set_is_colliding(true, i);
 			}
 
 			if (mymap.is_type_at(collision_points[i], TileType::key))
 			{
-				player->set_has_key(true);
+				test_player->set_has_key(true);
 
 				// delete key from the linked list
 				mymap.delete_type_at(*key_pos, &sprite_list, 38);
@@ -109,7 +108,7 @@ void loop()
 
 			if (mymap.is_type_at(collision_points[i], TileType::computer))
 			{
-				player->set_is_colliding(true, i);
+				test_player->set_is_colliding(true, i);
 			}
 
 			// check if player is colliding with a door
@@ -117,22 +116,29 @@ void loop()
 			{
 				if (test_door->get_is_locked())
 				{
-					player->set_is_colliding(true, i);
+					test_player->set_is_colliding(true, i);
 
-					if (gb.buttons.pressed(BUTTON_A) && player->get_has_key())
+					if (gb.buttons.pressed(BUTTON_A) && test_player->get_has_key())
 					{
 						test_door->set_is_locked(false);
+						test_player->reset_collision_points();
+					}
+				}
+				else
+				{
+					if (gb.buttons.pressed(BUTTON_A) && test_player->get_has_key())
+					{
+						test_door->set_is_locked(true);
 					}
 				}
 			}
 		}
-
 		delete collision_points;
 		collision_points = nullptr;
 
 		if (!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD))
 		{
-			player->idle();
+			test_player->idle();
 		}
 	}
 }

@@ -1,4 +1,5 @@
 #include "sprite.cpp"
+#include "player.h"
 
 #ifndef COMPUTER_H
 #define COMPUTER_H
@@ -15,13 +16,13 @@ enum class ComputerTextureId
   right_off = 40
 };
 
-enum class Direction
-{
-  up,
-  down,
-  left,
-  right
-};
+// enum class Direction
+// {
+//   up,
+//   down,
+//   left,
+//   right
+// };
 
 class Computer : Sprite
 {
