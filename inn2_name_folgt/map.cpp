@@ -1,4 +1,3 @@
-
 #include "sprite.cpp"
 #include "linked_list.cpp"
 #ifndef MAP
@@ -15,12 +14,21 @@ enum TileType
     door
 };
 
+struct Distance_pp
+{
+    Distance_pp() : point(0,0){};
+    Distance_pp(Point p, int d) : point(p), distance(d){};
+    Point point;
+    uint8_t distance;
+};
+
 class Map
 {
 private:
     Point dimensions;
     TileType **tile_type_grid;
-    Map(int w, int h) : dimensions(w, h)
+    Point neighbors[4];
+    Map(int w, int h) : dimensions(w, h), neighbors {Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1)}
     {
         int grid_width = dimensions.x / FACTOR;
         int grid_height = dimensions.y / FACTOR;
@@ -150,5 +158,39 @@ public:
             this->insert_type_at(position, TileType::not_solid);
         }
     }
+
+   //returns pointer to array of distances to target point for all tiles in tilegrid
+   uint8_t * get_path_grid(Point target_point)
+   {
+      int x = target_point.x / FACTOR;
+      int y = target_point.y / FACTOR;
+      uint8_t * path_grid = new uint8_t[80]; //10*8
+      for (int i = 0; i < 80; i++)
+        path_grid[i] = 80;
+      LinkedList<Distance_pp> distance_pp;
+      distance_pp.append_value({ Point(x,y), 0});
+      auto iterator = distance_pp.get_Iterator();
+      auto current = &distance_pp.start->value;
+      while(42)
+      {
+        path_grid[(current->point.x)+(current->point.y*10)] = current->distance;
+        for(Point neighbor: neighbors)
+        {
+          Point current_point = current->point+neighbor;
+          if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x+current_point.y*10] == 80)
+          {
+            path_grid[current_point.x+current_point.y*10] = 70;
+            if (this->tile_type_grid[current_point.x][current_point.y] == not_solid)
+            {
+              distance_pp.append_value({ current_point, current->distance+1});
+            }
+          }
+        }
+        if (iterator.has_next())
+          current = iterator.get_next();
+        else break;
+      }
+      return path_grid;
+   }
 };
 #endif
