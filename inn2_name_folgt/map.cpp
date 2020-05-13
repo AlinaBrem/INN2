@@ -11,7 +11,8 @@ enum TileType
     not_solid,
     key,
     computer,
-    door
+    door,
+    player
 };
 
 struct Distance_pp
@@ -133,10 +134,23 @@ public:
     // and sets the type in the tile_type_grid
     void insert_type_at(Point position, TileType type)
     {
-      int x = position.x / FACTOR;
-      int y = position.y / FACTOR;
+        int x = position.x / FACTOR;
+        int y = position.y / FACTOR;
+        
+        this->tile_type_grid[x][y] = type;
+    }
 
-      this->tile_type_grid[x][y] = type;
+    // inserts a new object at the given position
+    // and sets the type in the tile_type_grid if the tile is empty (not_solid)
+    void insert_type_if_empty(Point position, TileType type)
+    {
+        int x = position.x / FACTOR;
+        int y = position.y / FACTOR;
+        
+        if(this->is_type_at(position, TileType::not_solid))
+        {
+            this->tile_type_grid[x][y] = TileType::player;
+        }
     }
 
     // returns true if a concrete type is at a given position
@@ -156,6 +170,66 @@ public:
         if(ll->try_delete(i))
         {
             this->insert_type_at(position, TileType::not_solid);
+        }
+    }
+
+    // delete type at a given position
+    void delete_type_at(Point position, TileType type)
+    {   
+        if(this->is_type_at(position, type))
+        {
+            this->insert_type_at(position, TileType::not_solid);
+        }
+    }
+
+    // prints the index of a given point in the tile_grid
+    void print_tile_grid_index_at(Point position)
+    {
+        int x = position.x / FACTOR;
+        int y = position.y / FACTOR;
+
+        gb.display.print("x: ");
+        gb.display.println(x);
+        gb.display.print("y: ");
+        gb.display.println(y);
+    }
+
+    // prints the type of the tile at a given position
+    void print_tile_type_at(Point position)
+    {
+        gb.display.println(this->get_tile_type_at(position));
+    }
+
+    // returns the type of the Point in the tile_grid as string
+    String get_tile_type_at(Point position)
+    {
+        int x = position.x / FACTOR;
+        int y = position.y / FACTOR;
+
+        auto type = this->tile_type_grid[x][y];
+
+        switch(type)
+        {
+            case TileType::solid:
+                return "solid";
+                
+            case TileType::not_solid:
+                return "not_solid";
+
+            case TileType::key:
+                return "key";
+
+            case TileType::computer:
+                return "computer";
+
+            case TileType::door:
+                return "door";
+
+            case TileType::player:
+                return "player";
+            
+            default:
+                return "not_solid";
         }
     }
 

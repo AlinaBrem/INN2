@@ -89,6 +89,9 @@ void loop()
 		draw();
 		// player collision detection with 'solid' objects
 		Point *collision_points = test_player->get_collision_points();
+
+		mymap.insert_type_if_empty(test_player->get_position(), TileType::player);
+
 		for (int i = 0; i < NUM_COLLISION_POINTS; i++)
 		{
 			// check if player is colliding with something
@@ -111,7 +114,22 @@ void loop()
 				test_player->set_is_colliding(true, i);
 			}
 
-			// check if player is colliding with a door
+			if (mymap.is_type_at(*test_computer->get_interaction_point(), TileType::player) && mymap.is_type_at(test_player->get_interaction_point(), TileType::computer))
+			{
+				test_player->set_is_colliding(true);
+
+				if (gb.buttons.pressed(BUTTON_A))
+				{
+					test_computer->set_is_on(true);
+					test_player->set_is_interacting(true);
+				}
+			}
+			else
+			{
+				test_computer->set_is_on(test_player->get_is_interacting());
+			}
+
+			// check if the player can interact with a door
 			if (mymap.is_type_at(collision_points[i], TileType::door))
 			{
 				if (test_door->get_is_locked())
@@ -133,10 +151,12 @@ void loop()
 				}
 			}
 		}
+
+		mymap.delete_type_at(test_player->get_position(), TileType::player);
 		delete collision_points;
 		collision_points = nullptr;
 
-		if (!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD))
+		if (!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD) && !test_player->get_is_interacting())
 		{
 			test_player->idle();
 		}

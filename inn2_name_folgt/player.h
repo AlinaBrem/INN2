@@ -1,51 +1,10 @@
 #include "sprite.cpp"
+#include "enum.h"
 
 #ifndef PLAYER_H
 #define PLAYER_H
 
 #define NUM_COLLISION_POINTS 12
-
-// position of the collision points
-//    *  *  *
-//  *         *
-//  *    P    *
-//  *         *
-//    *  *  *
-enum class CollisionPoints
-{
-    front_left,
-    front_right,
-    front_middle,
-    back_left,
-    back_right,
-    back_middle,
-    middle_left_front,
-    middle_left_center,
-    middle_left_back,
-    middle_right_front,
-    middle_right_center,
-    middle_right_back,
-};
-
-enum class Direction
-{
-    up,
-    down,
-    left,
-    right
-};
-
-enum class PlayerTextureId
-{
-    move_up_start = 61,
-    move_down_start = 71,
-    move_left_start = 76,
-    move_right_start = 66,
-    idle_up_start = 60,
-    idle_down_start = 70,
-    idle_left_start = 75,
-    idle_right_start = 65
-};
 
 class Player : Sprite
 {
@@ -62,6 +21,8 @@ private:
     int number_animation;
 
     int has_key;
+
+    bool is_interacting;
 
     bool is_colliding_enemy;
 
@@ -92,6 +53,10 @@ public:
 
     bool get_has_key();
 
+    void set_is_interacting(bool value);
+
+    bool get_is_interacting();
+
     // returns a pointer with the current coordinates(x,y) of all 8 collision points
     Point *get_collision_points();
 
@@ -100,6 +65,9 @@ public:
 
     // sets a specific is_colliding variable based on an index
     void set_is_colliding(bool value, int i);
+
+    // sets a specific is_colliding variable based on the player direction
+    void set_is_colliding(bool value);
 
     // move up -> y--
     void move_up();
@@ -116,20 +84,32 @@ public:
     // play the idle animation
     void idle();
 
+    // play the interaction animation
+    void interact();
+
     // handles the walking animation in all directions
     void play_walk_animation(PlayerTextureId start_texture_id);
+
+    // returns the position of the sprite as a Point
+    Point get_position();
+
+    // returns the currently active interaction point
+    Point get_interaction_point();
 
     // set all is_colliding variables to false
     void reset_collision_points();
 
+    // set interaction texture id for the player
+    void interact(PlayerTextureId start_texture_id);
+
     // debug function
     void print_collision_points();
 
-    // displays position of the player (Debug only)
-    void print_position();
-
     // displays a message (Debug only)
     void print_message(String message);
+
+    // prints the interaction collision point (1 pixel in front of the player)
+    void print_interaction_collision_points();
 };
 
 #endif //PLAYER_H

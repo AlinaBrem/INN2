@@ -4,31 +4,31 @@ Computer::Computer(int x, int y, int w, int h, int t, int direction) : Sprite(x,
 {
   this->width = w;
   this->height = h;
-  
+
   this->direction = (Direction)direction;
   this->is_on = false;
 
-  this->set_collision_point();
+  this->set_interaction_point();
 };
 
-void Computer::set_collision_point()
+void Computer::set_interaction_point()
 {
   switch (this->direction)
   {
   case Direction::up:
-    this->collision_point = new Point(this->position.x + this->width / 2, this->position.y);
+    this->interaction_point = new Point(this->position.x + this->width / 2, this->position.y);
     break;
 
   case Direction::down:
-    this->collision_point = new Point(this->position.x + this->width / 2, this->position.y + this->height);
+    this->interaction_point = new Point(this->position.x + this->width / 2, this->position.y + this->height);
     break;
 
   case Direction::left:
-    this->collision_point = new Point(this->position.x, this->position.y + this->height / 2);
+    this->interaction_point = new Point(this->position.x, this->position.y + this->height / 2);
     break;
 
   case Direction::right:
-    this->collision_point = new Point(this->position.x + this->width, this->position.y + this->height / 2);
+    this->interaction_point = new Point(this->position.x + this->width, this->position.y + this->height / 2);
     break;
 
   default:
@@ -36,15 +36,15 @@ void Computer::set_collision_point()
   }
 }
 
-Point *Computer::get_collision_point()
+Point *Computer::get_interaction_point()
 {
-  return this->collision_point;
+  return this->interaction_point;
 }
 
-void Computer::print_collision_point()
+void Computer::print_interaction_point()
 {
-  gb.display.drawLine(this->collision_point->x, this->collision_point->y,
-                      this->collision_point->x, this->collision_point->y);
+  gb.display.drawLine(this->interaction_point->x, this->interaction_point->y,
+                      this->interaction_point->x, this->interaction_point->y);
 }
 
 void Computer::set_is_on(bool value)
@@ -87,4 +87,9 @@ void Computer::set_is_on(bool value)
 bool Computer::get_is_on()
 {
   return this->is_on;
+}
+
+Point Computer::get_position()
+{
+  return this->position;
 }
