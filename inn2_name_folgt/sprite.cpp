@@ -31,6 +31,20 @@ public:
       temp.y -= other.y;
       return temp;
     }
+    Point operator / (int other)
+    {
+      Point temp(this->x, this->y);
+      temp.x /= other;
+      temp.y /= other;
+      return temp;
+    }
+    Point operator * (int other)
+    {
+      Point temp(this->x, this->y);
+      temp.x *= other;
+      temp.y *= other;
+      return temp;
+    }
 };
 
 class Sprite

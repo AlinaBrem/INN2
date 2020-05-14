@@ -26,8 +26,8 @@ struct Distance_pp
 class Map
 {
 private:
-    Point dimensions;
     TileType **tile_type_grid;
+    Point dimensions;
     Point neighbors[4];
     Map(int w, int h) : dimensions(w, h), neighbors {Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1)}
     {
@@ -46,6 +46,7 @@ private:
     };
 
 public:
+    
     static Map load_map1(LinkedList<Sprite *> *ll)
     {
         Map map1 = Map(80, 64);
@@ -240,13 +241,16 @@ public:
       int y = target_point.y / FACTOR;
       uint8_t * path_grid = new uint8_t[80]; //10*8
       for (int i = 0; i < 80; i++)
+      {
         path_grid[i] = 80;
+      }
       LinkedList<Distance_pp> distance_pp;
       distance_pp.append_value({ Point(x,y), 0});
-      auto iterator = distance_pp.get_Iterator();
-      auto current = &distance_pp.start->value;
-      while(42)
+      LinkedList<Distance_pp>::Iterator iterator = distance_pp.get_Iterator();
+      Distance_pp * current;
+      while(iterator.has_next())
       {
+        current = iterator.get_next();
         path_grid[(current->point.x)+(current->point.y*10)] = current->distance;
         for(Point neighbor: neighbors)
         {
@@ -260,9 +264,6 @@ public:
             }
           }
         }
-        if (iterator.has_next())
-          current = iterator.get_next();
-        else break;
       }
       return path_grid;
    }

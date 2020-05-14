@@ -17,12 +17,11 @@
 LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
 
 // start position of all objects
-Point *start_pos = new Point(35, 30);
-Point *key_pos = new Point(35, 40);
+//Point *start_pos = new Point(35, 30);
+Point *start_pos = new Point(64, 48);
+Point *key_pos = new Point(32, 40);
 Point *computer_pos = new Point(8, 8);
 Point *door_pos = new Point(24, 24);
-
-Enemy *enemy = new Enemy(40, 8, 8, 8, 60, Point(64, 48));
 
 Key *test_key = new Key(key_pos->x, key_pos->y, 8, 8, 44);
 Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, 8, 8, 30, 1);
@@ -31,7 +30,10 @@ Door *test_door = new Door(door_pos->x, door_pos->y, 8, 8, 48);
 Player *test_player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
 
 Map mymap = Map::load_map1(&sprite_list);
-uint8_t *path_test = NULL;
+
+Enemy *enemy = new Enemy(32, 8, 8, 8, 60, Point(8, 40));
+
+//uint8_t *path_test = NULL;
 
 void setup()
 {
@@ -45,7 +47,9 @@ void setup()
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
 	mymap.insert_type_at(*door_pos, TileType::door);
-	path_test = mymap.get_path_grid(Point(20, 10));
+  
+  enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
+  //path_test = mymap.get_path_grid(Point(8, 40));
 }
 
 void loop()
@@ -71,17 +75,30 @@ void loop()
 	}
 
 	enemy->move();
+  if (enemy->has_reached_target())
+  {
+    enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
+  }
 	if (gb.buttons.repeat(BUTTON_B, 0))
 	{
 		gb.display.drawImage(0, 0, my_img_buf);
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
-		/* // path test
+		/*// path test
     for (int i = 0; i < 80; i++)
     {
       gb.display.setCursor(8*(i%10), 8*(i/10));
       gb.display.print(path_test[i]);
+    }*/
+    /*// tile_type_grid;
+    for (int i = 0; i < 10; i++)
+    {
+      for (int j = 0; j < 8; j++)
+      {
+        gb.display.setCursor(8*i, 8*j);
+        gb.display.print(mymap.tile_type_grid[i][j]);
+      }
     }*/
 	}
 	else

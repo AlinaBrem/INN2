@@ -21,30 +21,34 @@ private:
     };
 
     Node *end = nullptr;
+    Node *start = nullptr;
 
 public:
-    Node *start = nullptr;
+    
     class Iterator
     {
     private:
+        Node *fake_start_node;
         Node *current_node;
 
     public:
+        ~Iterator()
+        {
+          delete(fake_start_node);
+        }
         bool has_next()
         {
-            if (current_node != nullptr)
+            if (current_node->next != nullptr)
                 return true;
             else
                 return false;
         }
         T *get_next()
         {
-            if (current_node != nullptr)
+            if (current_node->next != nullptr)
             {
-                T *temp;
-                temp = &current_node->value;
                 current_node = current_node->next;
-                return temp;
+                return &current_node->value;
             }
             else
                 return nullptr;
@@ -53,7 +57,9 @@ public:
         static Iterator new_iterator(Node *n)
         {
             Iterator it;
-            it.current_node = n;
+            it.fake_start_node = Node::new_node(n->value); //value of fake_node doesnt matter but needs to be of type t
+            it.fake_start_node->next = n;
+            it.current_node = it.fake_start_node;
             return it;
         }
     };
