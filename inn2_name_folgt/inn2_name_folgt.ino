@@ -2,7 +2,6 @@
 
 #include "texture.cpp"
 #include "sprite.cpp"
-//#include "wonder_wall.cpp"
 #include "linked_list.cpp"
 #include "map.cpp"
 #include "player.h"
@@ -11,6 +10,7 @@
 #include "door.h"
 #include "key.h"
 #include "trap.h"
+#include "enum.h"
 
 #define FRAME_PERIOD 2
 
@@ -33,6 +33,8 @@ Map mymap = Map::load_map1(&sprite_list);
 
 Enemy *enemy = new Enemy(32, 8, 8, 8, 60, Point(8, 40));
 
+int key_index = 38;
+
 //uint8_t *path_test = NULL;
 
 void setup()
@@ -47,9 +49,9 @@ void setup()
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
 	mymap.insert_type_at(*door_pos, TileType::door);
-  
-  enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
-  //path_test = mymap.get_path_grid(Point(8, 40));
+
+	enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
+	//path_test = mymap.get_path_grid(Point(8, 40));
 }
 
 void loop()
@@ -75,11 +77,11 @@ void loop()
 	}
 
 	enemy->move();
-  if (enemy->has_reached_target())
-  {
-    enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
-  }
-	if (gb.buttons.repeat(BUTTON_B, 0))
+	if (enemy->has_reached_target())
+	{
+		enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
+	}
+	if (gb.buttons.repeat(BUTTON_HOME, 0))
 	{
 		gb.display.drawImage(0, 0, my_img_buf);
 		uint16_t ram = gb.getFreeRam();
@@ -91,7 +93,7 @@ void loop()
       gb.display.setCursor(8*(i%10), 8*(i/10));
       gb.display.print(path_test[i]);
     }*/
-    /*// tile_type_grid;
+		/*// tile_type_grid;
     for (int i = 0; i < 10; i++)
     {
       for (int j = 0; j < 8; j++)
@@ -104,70 +106,76 @@ void loop()
 	else
 	{
 		draw();
-		// player collision detection with 'solid' objects
+		// player collision detection with objects
 		Point *collision_points = test_player->get_collision_points();
 
 		mymap.insert_type_if_empty(test_player->get_position(), TileType::player);
 
 		for (int i = 0; i < NUM_COLLISION_POINTS; i++)
 		{
-			// check if player is colliding with something
-			if (mymap.is_type_at(collision_points[i], TileType::solid))
+			// check if player is colliding with solid, computer or door
+			if (mymap.is_type_at(collision_points[i], TileType::solid) || mymap.is_type_at(collision_points[i], TileType::computer) || mymap.is_type_at(collision_points[i], TileType::door) && test_door->get_is_locked())
 			{
 				// set is_colliding
 				test_player->set_is_colliding(true, i);
 			}
 
+			// check if player is colliding with the key
 			if (mymap.is_type_at(collision_points[i], TileType::key))
 			{
-				test_player->set_has_key(true);
+				 test_player->add_item(KEY);
 
 				// delete key from the linked list
-				mymap.delete_type_at(*key_pos, &sprite_list, 38);
+				mymap.delete_type_at(*key_pos, &sprite_list, key_index);
 			}
+		}
 
-			if (mymap.is_type_at(collision_points[i], TileType::computer))
+		// check if player is in range of the computer
+		if (mymap.is_type_at(*test_computer->get_interaction_point(), TileType::player) && mymap.is_type_at(test_player->get_interaction_point(), TileType::computer))
+		{
+			test_player->set_is_colliding(true);
+
+			if (gb.buttons.pressed(BUTTON_A))
 			{
-				test_player->set_is_colliding(true, i);
+				test_computer->set_is_on(true);
+				test_player->set_is_interacting(true);
 			}
+		}
+		else
+		{
+			test_computer->set_is_on(test_player->get_is_interacting());
+		}
 
-			if (mymap.is_type_at(*test_computer->get_interaction_point(), TileType::player) && mymap.is_type_at(test_player->get_interaction_point(), TileType::computer))
+		// check if the player can interact with a door (open, close)
+		if (mymap.is_type_at(test_player->get_interaction_point(), TileType::door))
+		{
+			if (test_player->get_current_item() == KEY)
 			{
-				test_player->set_is_colliding(true);
-
 				if (gb.buttons.pressed(BUTTON_A))
 				{
-					test_computer->set_is_on(true);
-					test_player->set_is_interacting(true);
-				}
-			}
-			else
-			{
-				test_computer->set_is_on(test_player->get_is_interacting());
-			}
-
-			// check if the player can interact with a door
-			if (mymap.is_type_at(collision_points[i], TileType::door))
-			{
-				if (test_door->get_is_locked())
-				{
-					test_player->set_is_colliding(true, i);
-
-					if (gb.buttons.pressed(BUTTON_A) && test_player->get_has_key())
-					{
-						test_door->set_is_locked(false);
-						test_player->reset_collision_points();
-					}
-				}
-				else
-				{
-					if (gb.buttons.pressed(BUTTON_A) && test_player->get_has_key())
-					{
-						test_door->set_is_locked(true);
-					}
+					test_door->set_is_locked(!test_door->get_is_locked());
+					test_player->reset_collision_points();
 				}
 			}
 		}
+
+		// place trap on the current player position
+		if (gb.buttons.pressed(BUTTON_B) && test_player->get_current_item() == TRAP && (mymap.is_type_at(test_player->get_position(), TileType::not_solid) || mymap.is_type_at(test_player->get_position(), TileType::player)))
+		{
+			test_player->set_trap_count(-1);
+			Trap *test_trap = new Trap(test_player->get_position().x, test_player->get_position().y, 8, 8, 35);
+
+			sprite_list.push_value((Sprite *)test_trap);
+			mymap.insert_type_at(test_player->get_position(), TileType::trap);
+			key_index += 1;
+		}
+
+		if (gb.buttons.pressed(BUTTON_MENU))
+		{
+			test_player->next_item();
+		}
+
+		test_player->print_current_item();
 
 		mymap.delete_type_at(test_player->get_position(), TileType::player);
 		delete collision_points;

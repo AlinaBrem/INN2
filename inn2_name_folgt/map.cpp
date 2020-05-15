@@ -1,23 +1,15 @@
 #include "sprite.cpp"
 #include "linked_list.cpp"
+#include "enum.h"
+
 #ifndef MAP
 #define MAP
 
 #define FACTOR 8
 
-enum TileType
-{
-    solid,
-    not_solid,
-    key,
-    computer,
-    door,
-    player
-};
-
 struct Distance_pp
 {
-    Distance_pp() : point(0,0){};
+    Distance_pp() : point(0, 0){};
     Distance_pp(Point p, int d) : point(p), distance(d){};
     Point point;
     uint8_t distance;
@@ -29,7 +21,7 @@ private:
     TileType **tile_type_grid;
     Point dimensions;
     Point neighbors[4];
-    Map(int w, int h) : dimensions(w, h), neighbors {Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1)}
+    Map(int w, int h) : dimensions(w, h), neighbors{Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1)}
     {
         int grid_width = dimensions.x / FACTOR;
         int grid_height = dimensions.y / FACTOR;
@@ -46,7 +38,6 @@ private:
     };
 
 public:
-    
     static Map load_map1(LinkedList<Sprite *> *ll)
     {
         Map map1 = Map(80, 64);
@@ -119,16 +110,18 @@ public:
 
         return map1;
     }
-    bool solid_at_position(Point p)
-    {
-        int x = p.x / FACTOR;
-        int y = p.y / FACTOR;
-        if (tile_type_grid[x][y] == solid)
-        {
-            return true;
-        }
-        return false;
-    }
+
+    // bool solid_at_position(Point p)
+    // {
+    //     int x = p.x / FACTOR;
+    //     int y = p.y / FACTOR;
+    //     if (tile_type_grid[x][y] == solid)
+    //     {
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
     ~Map(){};
 
     // inserts a new object at the given position
@@ -137,7 +130,7 @@ public:
     {
         int x = position.x / FACTOR;
         int y = position.y / FACTOR;
-        
+
         this->tile_type_grid[x][y] = type;
     }
 
@@ -147,8 +140,8 @@ public:
     {
         int x = position.x / FACTOR;
         int y = position.y / FACTOR;
-        
-        if(this->is_type_at(position, TileType::not_solid))
+
+        if (this->is_type_at(position, TileType::not_solid))
         {
             this->tile_type_grid[x][y] = TileType::player;
         }
@@ -168,7 +161,7 @@ public:
     // also deletes the sprite from the LinkedList
     void delete_type_at(Point position, LinkedList<Sprite *> *ll, int i)
     {
-        if(ll->try_delete(i))
+        if (ll->try_delete(i))
         {
             this->insert_type_at(position, TileType::not_solid);
         }
@@ -176,8 +169,8 @@ public:
 
     // delete type at a given position
     void delete_type_at(Point position, TileType type)
-    {   
-        if(this->is_type_at(position, type))
+    {
+        if (this->is_type_at(position, type))
         {
             this->insert_type_at(position, TileType::not_solid);
         }
@@ -209,63 +202,66 @@ public:
 
         auto type = this->tile_type_grid[x][y];
 
-        switch(type)
+        switch (type)
         {
-            case TileType::solid:
-                return "solid";
-                
-            case TileType::not_solid:
-                return "not_solid";
+        case TileType::solid:
+            return "solid";
 
-            case TileType::key:
-                return "key";
+        case TileType::not_solid:
+            return "not_solid";
 
-            case TileType::computer:
-                return "computer";
+        case TileType::key:
+            return "key";
 
-            case TileType::door:
-                return "door";
+        case TileType::computer:
+            return "computer";
 
-            case TileType::player:
-                return "player";
-            
-            default:
-                return "not_solid";
+        case TileType::door:
+            return "door";
+
+        case TileType::player:
+            return "player";
+
+        case TileType::trap:
+            return "trap";
+
+        default:
+            return "not_solid";
         }
     }
 
-   //returns pointer to array of distances to target point for all tiles in tilegrid
-   uint8_t * get_path_grid(Point target_point)
-   {
-      int x = target_point.x / FACTOR;
-      int y = target_point.y / FACTOR;
-      uint8_t * path_grid = new uint8_t[80]; //10*8
-      for (int i = 0; i < 80; i++)
-      {
-        path_grid[i] = 80;
-      }
-      LinkedList<Distance_pp> distance_pp;
-      distance_pp.append_value({ Point(x,y), 0});
-      LinkedList<Distance_pp>::Iterator iterator = distance_pp.get_Iterator();
-      Distance_pp * current;
-      while(iterator.has_next())
-      {
-        current = iterator.get_next();
-        path_grid[(current->point.x)+(current->point.y*10)] = current->distance;
-        for(Point neighbor: neighbors)
+    //returns pointer to array of distances to target point for all tiles in tilegrid
+    uint8_t *get_path_grid(Point target_point)
+    {
+        int x = target_point.x / FACTOR;
+        int y = target_point.y / FACTOR;
+        uint8_t *path_grid = new uint8_t[80]; //10*8
+        for (int i = 0; i < 80; i++)
         {
-          Point current_point = current->point+neighbor;
-          if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x+current_point.y*10] == 80)
-          {
-            path_grid[current_point.x+current_point.y*10] = 70;
-            if (this->tile_type_grid[current_point.x][current_point.y] == not_solid)
-            {
-              distance_pp.append_value({ current_point, current->distance+1});
-            }
-          }
+            path_grid[i] = 80;
         }
-      }
-      return path_grid;
-   }
+        LinkedList<Distance_pp> distance_pp;
+        distance_pp.append_value({Point(x, y), 0});
+        LinkedList<Distance_pp>::Iterator iterator = distance_pp.get_Iterator();
+        Distance_pp *current;
+        while (iterator.has_next())
+        {
+            current = iterator.get_next();
+            path_grid[(current->point.x) + (current->point.y * 10)] = current->distance;
+            for (Point neighbor : neighbors)
+            {
+                Point current_point = current->point + neighbor;
+                if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x + current_point.y * 10] == 80)
+                {
+                    path_grid[current_point.x + current_point.y * 10] = 70;
+                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid)
+                    {
+                        distance_pp.append_value({current_point, current->distance + 1});
+                    }
+                }
+            }
+        }
+        return path_grid;
+    }
 };
 #endif

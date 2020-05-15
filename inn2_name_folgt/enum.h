@@ -30,25 +30,25 @@ enum class PlayerTextureId
 };
 
 // position of the collision points
-//    *  *  *
+//    *     *
 //  *         *
-//  *    P    *
+//       P    
 //  *         *
-//    *  *  *
+//    *     *
 enum class CollisionPoints
 {
   front_left,
   front_right,
-  front_middle,
+  // front_middle,
   back_left,
   back_right,
-  back_middle,
+  // back_middle,
   middle_left_front,
-  middle_left_center,
+  // middle_left_center,
   middle_left_back,
   middle_right_front,
-  middle_right_center,
-  middle_right_back,
+  // middle_right_center,
+  middle_right_back
 };
 
 enum class Direction
@@ -57,6 +57,17 @@ enum class Direction
   down,
   left,
   right
+};
+
+enum TileType
+{
+  solid,
+  not_solid,
+  key,
+  computer,
+  door,
+  player,
+  trap
 };
 
 #endif //ENUM_H

@@ -163,5 +163,7 @@ public:
     {
         delete_list();
     }
+
+    // TODO: Get number of nodes
 };
 #endif

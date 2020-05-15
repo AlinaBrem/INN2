@@ -7,13 +7,15 @@ Player::Player(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
     this->speed = 1;
     this->health = 1;
     this->is_dead = false;
-    this->is_colliding_enemy = false;
     this->frame_counter = 0;
     this->number_animation = 0;
-    this->has_key = false;
     this->direction = Direction::up;
     this->is_interacting = false;
+    this->trap_count = 1;
+    this->current_item_index = 0;
 
+    this->add_item(BOTTLE);
+    this->add_item(TRAP);
     this->reset_collision_points();
 };
 
@@ -23,26 +25,18 @@ Point *Player::get_collision_points()
     auto *points = new Point[NUM_COLLISION_POINTS]{
         // front_left
         Point(this->position.x + 1, this->position.y),
-        // front_middle
-        Point(this->position.x + this->width / 2, this->position.y),
         // front_right
         Point(this->position.x + this->width - 1, this->position.y),
         // back_left
         Point(this->position.x + 1, this->position.y + this->height),
-        // back_middle
-        Point(this->position.x + this->width / 2, this->position.y + this->height),
         // back_right
         Point(this->position.x + this->width - 1, this->position.y + this->height),
         // middle_left_front
         Point(this->position.x, this->position.y + 1),
-        // middle_left_center
-        Point(this->position.x, this->position.y + this->height / 2),
         // middle_left_back
         Point(this->position.x, this->position.y + this->height - 1),
         // middle_right_front
         Point(this->position.x + this->width, this->position.y + 1),
-        // middle_right_center
-        Point(this->position.x + this->width, this->position.y + this->height / 2),
         // middle_right_back
         Point(this->position.x + this->width, this->position.y + this->height - 1)};
 
@@ -85,10 +79,6 @@ void Player::set_is_colliding(bool value, int i)
         this->is_colliding_front_right = value;
         break;
 
-    case CollisionPoints::front_middle:
-        this->is_colliding_front_middle = value;
-        break;
-
     case CollisionPoints::back_left:
         this->is_colliding_back_left = value;
         break;
@@ -97,16 +87,8 @@ void Player::set_is_colliding(bool value, int i)
         this->is_colliding_back_right = value;
         break;
 
-    case CollisionPoints::back_middle:
-        this->is_colliding_back_middle = value;
-        break;
-
     case CollisionPoints::middle_left_front:
         this->is_colliding_middle_left_front = value;
-        break;
-
-    case CollisionPoints::middle_left_center:
-        this->is_colliding_middle_left_center = value;
         break;
 
     case CollisionPoints::middle_left_back:
@@ -115,10 +97,6 @@ void Player::set_is_colliding(bool value, int i)
 
     case CollisionPoints::middle_right_front:
         this->is_colliding_middle_right_front = value;
-        break;
-
-    case CollisionPoints::middle_right_center:
-        this->is_colliding_middle_right_center = value;
         break;
 
     case CollisionPoints::middle_right_back:
@@ -135,19 +113,23 @@ void Player::set_is_colliding(bool value)
     switch (this->direction)
     {
     case Direction::up:
-        this->is_colliding_front_middle = value;
+        this->is_colliding_front_left = value;
+        this->is_colliding_front_right = value;
         break;
 
     case Direction::down:
-        this->is_colliding_back_middle = value;
+        this->is_colliding_back_left = value;
+        this->is_colliding_back_right = value;
         break;
 
     case Direction::left:
-        this->is_colliding_middle_left_center = value;
+        this->is_colliding_middle_left_front = value;
+        this->is_colliding_middle_left_back = value;
         break;
 
     case Direction::right:
-        this->is_colliding_middle_right_center = value;
+        this->is_colliding_middle_right_front = value;
+        this->is_colliding_middle_right_back = value;
         break;
 
     default:
@@ -159,27 +141,23 @@ void Player::reset_collision_points()
 {
     this->is_colliding_front_left = false;
     this->is_colliding_front_right = false;
-    this->is_colliding_front_middle = false;
 
     this->is_colliding_back_left = false;
     this->is_colliding_back_right = false;
-    this->is_colliding_back_middle = false;
 
     this->is_colliding_middle_right_front = false;
-    this->is_colliding_middle_right_center = false;
     this->is_colliding_middle_right_back = false;
 
     this->is_colliding_middle_left_front = false;
-    this->is_colliding_middle_left_center = false;
     this->is_colliding_middle_left_back = false;
 }
 
 void Player::move_up()
 {
-    if (!this->is_colliding_front_left && !this->is_colliding_front_middle && !this->is_colliding_front_right)
+    this->direction = Direction::up;
+    if (!this->is_colliding_front_left && !this->is_colliding_front_right)
     {
         this->position.y--;
-        this->direction = Direction::up;
 
         this->set_is_interacting(false);
         this->play_walk_animation(PlayerTextureId::move_up);
@@ -189,10 +167,10 @@ void Player::move_up()
 
 void Player::move_down()
 {
-    if (!this->is_colliding_back_left && !this->is_colliding_back_middle && !this->is_colliding_back_right)
+    this->direction = Direction::down;
+    if (!this->is_colliding_back_left && !this->is_colliding_back_right)
     {
         this->position.y++;
-        this->direction = Direction::down;
 
         this->set_is_interacting(false);
         this->play_walk_animation(PlayerTextureId::move_down);
@@ -202,10 +180,10 @@ void Player::move_down()
 
 void Player::move_right()
 {
-    if (!this->is_colliding_middle_right_front && !this->is_colliding_middle_right_center && !this->is_colliding_middle_right_back)
+    this->direction = Direction::right;
+    if (!this->is_colliding_middle_right_front && !this->is_colliding_middle_right_back)
     {
         this->position.x++;
-        this->direction = Direction::right;
 
         this->set_is_interacting(false);
         this->play_walk_animation(PlayerTextureId::move_right);
@@ -215,10 +193,10 @@ void Player::move_right()
 
 void Player::move_left()
 {
-    if (!this->is_colliding_middle_left_front && !this->is_colliding_middle_left_center && !this->is_colliding_middle_left_back)
+    this->direction = Direction::left;
+    if (!this->is_colliding_middle_left_front && !this->is_colliding_middle_left_back)
     {
         this->position.x--;
-        this->direction = Direction::left;
 
         this->set_is_interacting(false);
         this->play_walk_animation(PlayerTextureId::move_left);
@@ -293,42 +271,36 @@ void Player::play_walk_animation(PlayerTextureId start_texture_id)
 
 void Player::print_collision_points()
 {
-    gb.display.setColor(GREEN);
-
     // front_left
+    gb.display.setColor(this->is_colliding_front_left ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x + 1, this->position.y,
                         this->position.x + 1, this->position.y);
-    // front_middle
-    gb.display.drawLine(this->position.x + this->width / 2, this->position.y,
-                        this->position.x + this->width / 2, this->position.y);
     // front_right
+    gb.display.setColor(this->is_colliding_front_right ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x + this->width - 1, this->position.y,
                         this->position.x + this->width - 1, this->position.y);
     // back_left
+    gb.display.setColor(this->is_colliding_back_left ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x + 1, this->position.y + this->height,
                         this->position.x + 1, this->position.y + this->height);
-    // back_middle
-    gb.display.drawLine(this->position.x + this->width / 2, this->position.y + this->height,
-                        this->position.x + this->width / 2, this->position.y + this->height);
     // back_right
+    gb.display.setColor(this->is_colliding_back_right ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x + this->width - 1, this->position.y + this->height,
                         this->position.x + this->width - 1, this->position.y + this->height);
     // middle_left_front
+    gb.display.setColor(this->is_colliding_middle_left_front ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x, this->position.y + 1,
                         this->position.x, this->position.y + 1);
-    // middle_left_center
-    gb.display.drawLine(this->position.x, this->position.y + this->height / 2,
-                        this->position.x, this->position.y + this->height / 2);
     // middle_left_back
+    gb.display.setColor(this->is_colliding_middle_left_back ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x, this->position.y + this->height - 1,
                         this->position.x, this->position.y + this->height - 1);
     // middle_right_front
+    gb.display.setColor(this->is_colliding_middle_right_front ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x + this->width, this->position.y + 1,
                         this->position.x + this->width, this->position.y + 1);
-    // middle_right_center
-    gb.display.drawLine(this->position.x + this->width, this->position.y + this->height / 2,
-                        this->position.x + this->width, this->position.y + this->height / 2);
     // middle_right_back
+    gb.display.setColor(this->is_colliding_middle_right_back ? YELLOW : WHITE);
     gb.display.drawLine(this->position.x + this->width, this->position.y + this->height - 1,
                         this->position.x + this->width, this->position.y + this->height - 1);
 }
@@ -341,16 +313,6 @@ Point Player::get_position()
 void Player::print_message(String message)
 {
     gb.display.println(message);
-}
-
-bool Player::get_has_key()
-{
-    return this->has_key;
-}
-
-void Player::set_has_key(bool value)
-{
-    this->has_key = value;
 }
 
 Point Player::get_interaction_point()
@@ -374,8 +336,10 @@ Point Player::get_interaction_point()
     }
 }
 
-void Player::print_interaction_collision_points()
+void Player::print_interaction_points()
 {
+    gb.display.setColor(BLUE);
+
     // front_middle
     gb.display.drawLine(this->position.x + this->width / 2, this->position.y - 1,
                         this->position.x + this->width / 2, this->position.y - 1);
@@ -391,4 +355,68 @@ void Player::print_interaction_collision_points()
     // middle_left_center
     gb.display.drawLine(this->position.x - 1, this->position.y + this->height / 2,
                         this->position.x - 1, this->position.y + this->height / 2);
+}
+
+int Player::get_trap_count()
+{
+    return this->trap_count;
+}
+
+void Player::set_trap_count(int value)
+{
+    this->trap_count += value;
+
+    if (this->trap_count < 0)
+    {
+        this->trap_count = 0;
+    }
+
+    if(this->trap_count == 0)
+    {
+        this->delete_item(TRAP);
+    }
+}
+
+void Player::add_item(String item)
+{
+    for (int i = 0; i < MAX_ITEMS; i++)
+    {
+        if (this->inventory[i] == "")
+        {
+            this->inventory[i] = item;
+            return;
+        }
+    }
+}
+
+void Player::delete_item(String item)
+{
+    for (int i = 0; i < MAX_ITEMS; i++)
+    {
+        if (this->inventory[i] == item)
+        {
+            this->inventory[i] = "";
+            return;
+        }
+    }
+}
+
+void Player::print_current_item()
+{
+    while (this->inventory[this->current_item_index] == "")
+    {
+        this->next_item();
+    }
+
+    gb.display.println(this->inventory[this->current_item_index]);
+}
+
+String Player::get_current_item()
+{
+    return this->inventory[this->current_item_index];
+}
+
+void Player::next_item()
+{
+    this->current_item_index = (this->current_item_index + 1) % 3;
 }
