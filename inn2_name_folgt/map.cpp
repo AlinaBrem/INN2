@@ -111,17 +111,6 @@ public:
         return map1;
     }
 
-    // bool solid_at_position(Point p)
-    // {
-    //     int x = p.x / FACTOR;
-    //     int y = p.y / FACTOR;
-    //     if (tile_type_grid[x][y] == solid)
-    //     {
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
     ~Map(){};
 
     // inserts a new object at the given position
@@ -233,25 +222,73 @@ public:
         LinkedList<Distance_pp> distance_pp;
         distance_pp.append_value({Point(x, y), 0});
         LinkedList<Distance_pp>::Iterator iterator = distance_pp.get_Iterator();
+        path_grid[x + y * 10] = tile_type_grid[x][y] == not_solid ? 0 : 80;
         Distance_pp *current;
         while (iterator.has_next())
         {
             current = iterator.get_next();
-            path_grid[(current->point.x) + (current->point.y * 10)] = current->distance;
             for (Point neighbor : neighbors)
             {
                 Point current_point = current->point + neighbor;
                 if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x + current_point.y * 10] == 80)
                 {
-                    path_grid[current_point.x + current_point.y * 10] = 70;
                     if (this->tile_type_grid[current_point.x][current_point.y] == not_solid)
                     {
+                        path_grid[(current_point.x) + (current_point.y * 10)] = current->distance + 1;
                         distance_pp.append_value({current_point, current->distance + 1});
+                    }
+                    else
+                    {
+                        path_grid[current_point.x + current_point.y * 10] = 70;   
                     }
                 }
             }
         }
         return path_grid;
+    }
+
+    //checks if there is a line of sight between two given points on the map
+    bool line_of_sight (Direction direction, Point a, Point b)
+    {
+        int delta_x = b.x - a.x;
+        int delta_y = b.y - a.y;
+        //check if basic direction is valid
+        switch(direction)
+        {
+        case Direction::right: 
+            if (a.x > b.x || abs(delta_y) > 10)
+              return false;
+            break;
+        case Direction::down:
+            if (a.y > b.y || abs(delta_x) > 10)
+              return false;
+            break;
+        case Direction::left:
+            if (a.x < b.x || abs(delta_y) > 10)
+              return false;
+            break;
+        case Direction::up:
+            if (a.y < b.y || abs(delta_x) > 10)
+              return false;
+            break;
+        }
+        //if so, check cell by cell in the correct direction
+        Point current_grid_cell = Point(a.x / 8, a.y / 8);
+        Point current_pixel_point = Point(a.x, a.y);
+        int number_of_steps = sqrt(pow(delta_x, 2)+pow(delta_y, 2));
+        for (int i = 0; i < number_of_steps; i++)
+        {
+            current_pixel_point = Point(a.x + i * delta_x / number_of_steps, a.y + i * delta_y / number_of_steps);
+            if (current_grid_cell != current_pixel_point / 8)
+            {
+                current_grid_cell = current_pixel_point / 8;
+                if (tile_type_grid[current_grid_cell.x][current_grid_cell.y] == TileType::solid || tile_type_grid[current_grid_cell.x][current_grid_cell.y] == TileType::computer)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 };
 #endif

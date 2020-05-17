@@ -20,4 +20,5 @@ class Enemy : public Sprite
     void move();
     void set_path_grid(uint8_t * new_grid);
     bool has_reached_target();
+    Direction get_direction();
 };

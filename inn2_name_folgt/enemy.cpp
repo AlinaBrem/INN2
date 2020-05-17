@@ -31,6 +31,13 @@ bool Enemy::has_reached_target()
 {
   return this->reached_target;
 }
+
+
+Direction Enemy::get_direction()
+{
+  return this->direction;
+}
+
 void Enemy::move()
 {
   //enemy only moves every three frames
@@ -45,6 +52,12 @@ void Enemy::move()
   {
     Point grid_position = position/8;
     int min = path_grid[(grid_position.x)+(grid_position.y*10)];
+    if (min >= 70)
+    {
+      this->reached_target = true;
+      return;      
+    }
+
     //find next smallest distance to target in grid
     for (Point neighbor: neighbors)
     {

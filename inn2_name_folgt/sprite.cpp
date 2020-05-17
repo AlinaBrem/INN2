@@ -58,6 +58,10 @@ protected:
                                                 tex_id(t){};
 
 public:
+    Point get_position()
+    {
+        return this->position;
+    }
     void draw()
     {
         gb.display.drawImage(position.x, position.y, my_img_buf, (tex_id % 10) * 8, (tex_id / 10) * 8, i_dimension.x, i_dimension.y); //geändert damit graphiken angepasst werden können (animationen)

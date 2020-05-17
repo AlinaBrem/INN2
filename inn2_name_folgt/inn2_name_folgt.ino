@@ -33,23 +33,23 @@ Map mymap = Map::load_map1(&sprite_list);
 
 Enemy *enemy = new Enemy(32, 8, 8, 8, 60, Point(8, 40));
 
-//uint8_t *path_test = NULL;
+uint8_t *path_test = NULL;
 
 void setup()
 {
 	gb.begin();
-	sprite_list.append_value(enemy);				 // linked list index = 37
-	sprite_list.append_value(test_key);			 // linked list index = 38
-	sprite_list.append_value(test_door);		 // linked list index = 39
-	sprite_list.append_value(test_player);	 // linked list index = 40
-	sprite_list.append_value(test_computer); // linked list index = 41
+	sprite_list.append_value(enemy);				 
+	sprite_list.append_value(test_key);			 
+	sprite_list.append_value(test_door);		 
+	sprite_list.append_value(test_player);	 
+	sprite_list.append_value(test_computer);
 
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
 	mymap.insert_type_at(*door_pos, TileType::door);
 
 	enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
-	//path_test = mymap.get_path_grid(Point(8, 40));
+	path_test = mymap.get_path_grid(Point(8, 40));
 }
 
 void loop()
@@ -74,10 +74,16 @@ void loop()
 		test_player->move_right();
 	}
 
+  if (mymap.line_of_sight(enemy->get_direction(), enemy->get_position(), test_player->get_position()))
+  {
+    path_test = mymap.get_path_grid(test_player->get_position());
+    enemy->set_path_grid(path_test);
+  }
 	enemy->move();
 	if (enemy->has_reached_target())
 	{
-		enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
+    path_test = mymap.get_path_grid(enemy->get_next_target());
+		enemy->set_path_grid(path_test);
 	}
 	if (gb.buttons.repeat(BUTTON_HOME, 0))
 	{
