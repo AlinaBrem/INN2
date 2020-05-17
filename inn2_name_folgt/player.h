@@ -12,7 +12,7 @@
 #define TRAP "Trap"
 #define BOTTLE "Bottle"
 
-class Player : Sprite
+class Player : public Sprite
 {
 private:
     int width;

@@ -158,16 +158,6 @@ public:
     }
 
     // delete type at a given position
-    // also deletes the sprite from the LinkedList
-    void delete_type_at(Point position, LinkedList<Sprite *> *ll, int i)
-    {
-        if (ll->try_delete(i))
-        {
-            this->insert_type_at(position, TileType::not_solid);
-        }
-    }
-
-    // delete type at a given position
     void delete_type_at(Point position, TileType type)
     {
         if (this->is_type_at(position, type))

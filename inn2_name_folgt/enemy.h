@@ -1,7 +1,7 @@
 #include "sprite.cpp"
 #include "enum.h"
 
-class Enemy : Sprite
+class Enemy : public Sprite
 {
   private:
     bool reached_target;

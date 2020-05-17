@@ -105,42 +105,31 @@ public:
             return &temp->value;
         return nullptr;
     }
-
-    //Versucht einen Wert an der Stelle i zu löschen, wenn das nicht geht wird false zurückgegeben.
-    bool try_delete(int i)
+    //delete function gets element and iterates through list to delete it, so that we dont have to use indizes in a linked list
+    // (if the exact same T occurs more than once in list only the first one is deleted)
+    bool delete_element(T element)
     {
-        if (i == 0 && start != nullptr)
+        if (start == nullptr)
         {
-            Node *temp = start->next;
-            delete (start);
-            start = temp;
+            return false;
+        }
+        Node * temp = start;
+        if (start->value == element)
+        {
+            start = start->next;
+            delete(temp);
             return true;
         }
-
-        Node *temp1 = start;
-        Node *temp2 = start;
-
-        int y = i;
-        while (y > 0 && temp2->next != nullptr)
+        while (temp->next != nullptr)
         {
-            temp1 = temp2;
-            temp2 = temp2->next;
-            y--;
-        }
-        if (y == 0)
-        {
-            if (temp1 == end)
+            if (element == temp->next->value)
             {
-                end = temp1;
+                Node * temp2 = temp->next;
+                temp->next = temp->next->next;
                 delete (temp2);
+                return true;
             }
-            else
-            {
-                Node *temp = temp1->next;
-                temp1->next = temp2->next;
-                delete (temp);
-            }
-            return true;
+            temp = temp->next;
         }
         return false;
     }

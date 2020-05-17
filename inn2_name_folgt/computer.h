@@ -4,7 +4,7 @@
 #ifndef COMPUTER_H
 #define COMPUTER_H
 
-class Computer : Sprite
+class Computer : public Sprite
 {
 private:
   int width;

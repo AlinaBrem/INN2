@@ -9,7 +9,7 @@ enum class DoorTextureId
   closed = 48 
 };
 
-class Door : Sprite
+class Door : public Sprite
 {
 public:
   Door(int x, int y, int w, int h, int t);

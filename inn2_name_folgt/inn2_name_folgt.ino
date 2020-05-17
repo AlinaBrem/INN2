@@ -33,18 +33,16 @@ Map mymap = Map::load_map1(&sprite_list);
 
 Enemy *enemy = new Enemy(32, 8, 8, 8, 60, Point(8, 40));
 
-int key_index = 38;
-
 //uint8_t *path_test = NULL;
 
 void setup()
 {
 	gb.begin();
-	sprite_list.append_value((Sprite *)enemy);				 // linked list index = 37
-	sprite_list.append_value((Sprite *)test_key);			 // linked list index = 38
-	sprite_list.append_value((Sprite *)test_door);		 // linked list index = 39
-	sprite_list.append_value((Sprite *)test_player);	 // linked list index = 40
-	sprite_list.append_value((Sprite *)test_computer); // linked list index = 41
+	sprite_list.append_value(enemy);				 // linked list index = 37
+	sprite_list.append_value(test_key);			 // linked list index = 38
+	sprite_list.append_value(test_door);		 // linked list index = 39
+	sprite_list.append_value(test_player);	 // linked list index = 40
+	sprite_list.append_value(test_computer); // linked list index = 41
 
 	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
@@ -125,8 +123,10 @@ void loop()
 			{
 				 test_player->add_item(KEY);
 
-				// delete key from the linked list
-				mymap.delete_type_at(*key_pos, &sprite_list, key_index);
+				// delete key from tiletypegrid 
+				mymap.delete_type_at(*key_pos, TileType::key);
+        //delete key from linked list
+        sprite_list.delete_element(test_key);
 			}
 		}
 
@@ -165,9 +165,8 @@ void loop()
 			test_player->set_trap_count(-1);
 			Trap *test_trap = new Trap(test_player->get_position().x, test_player->get_position().y, 8, 8, 35);
 
-			sprite_list.push_value((Sprite *)test_trap);
+			sprite_list.push_value(test_trap);
 			mymap.insert_type_at(test_player->get_position(), TileType::trap);
-			key_index += 1;
 		}
 
 		if (gb.buttons.pressed(BUTTON_MENU))

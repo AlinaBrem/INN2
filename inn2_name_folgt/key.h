@@ -3,7 +3,7 @@
 #ifndef KEY_H
 #define KEY_H
 
-class Key : Sprite
+class Key : public Sprite
 {
 public:
   Key(int x, int y, int w, int h, int t);
