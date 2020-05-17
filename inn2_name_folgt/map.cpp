@@ -222,7 +222,7 @@ public:
         LinkedList<Distance_pp> distance_pp;
         distance_pp.append_value({Point(x, y), 0});
         LinkedList<Distance_pp>::Iterator iterator = distance_pp.get_Iterator();
-        path_grid[x + y * 10] = tile_type_grid[x][y] == not_solid ? 0 : 80;
+        path_grid[x + y * 10] = tile_type_grid[x][y] == not_solid || tile_type_grid[x][y] == trap ? 0 : 80;
         Distance_pp *current;
         while (iterator.has_next())
         {
@@ -232,9 +232,14 @@ public:
                 Point current_point = current->point + neighbor;
                 if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x + current_point.y * 10] == 80)
                 {
-                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid)
+                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid || this->tile_type_grid[current_point.x][current_point.y] == trap )
                     {
                         path_grid[(current_point.x) + (current_point.y * 10)] = current->distance + 1;
+                        distance_pp.append_value({current_point, current->distance + 1});
+                    }
+                    else if (this->tile_type_grid[current_point.x][current_point.y] == door)
+                    {
+                        path_grid[current_point.x + current_point.y * 10] = 75;
                         distance_pp.append_value({current_point, current->distance + 1});
                     }
                     else

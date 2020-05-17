@@ -1,0 +1,5 @@
+Hinweise für Levelbauerlinge:
+
+alle Objekte & Enemy immer mit durch 8 teilbaren Koordinaten platzieren (/initialisieren)
+nie mehr als eine Falle pro Level (enemy sonst verwirrt)
+player als letztes in spritelist einhängen (enemy zumindest nach door) -> wegen draw()

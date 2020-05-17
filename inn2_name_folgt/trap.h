@@ -6,12 +6,12 @@
 class Trap : public Sprite
 {
 public:
-  Trap(int x, int y, int w, int h, int t);
+  Trap(int x, int y, int w, int h, int t, bool active);
   
   ~Trap() = default;
-
+  bool is_active();
 private:
-  bool is_active;
+  bool active;
 };
 
 #endif //TRAP_H

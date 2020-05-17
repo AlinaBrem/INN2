@@ -1,6 +1,12 @@
 #include "trap.h"
 
-Trap::Trap(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
+Trap::Trap(int x, int y, int w, int h, int t, bool active) : Sprite(x, y, w, h, t)
 {
-  this->is_active = false;
+  this->active = active;
 };
+
+bool Trap::is_active()
+{
+  return this->active;
+}
+

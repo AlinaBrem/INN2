@@ -23,6 +23,7 @@ Point *key_pos = new Point(32, 40);
 Point *computer_pos = new Point(8, 8);
 Point *door_pos = new Point(24, 24);
 
+Trap *test_trap = nullptr;
 Key *test_key = new Key(key_pos->x, key_pos->y, 8, 8, 44);
 Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, 8, 8, 30, 1);
 Door *test_door = new Door(door_pos->x, door_pos->y, 8, 8, 48);
@@ -31,16 +32,16 @@ Player *test_player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
 
 Map mymap = Map::load_map1(&sprite_list);
 
-Enemy *enemy = new Enemy(32, 8, 8, 8, 60, Point(8, 40));
+Enemy *enemy = new Enemy(32, 16, 8, 8, 60, Point(32, 32));
 
-uint8_t *path_test = NULL;
+//uint8_t *path_test = NULL;
 
 void setup()
 {
-	gb.begin();
-	sprite_list.append_value(enemy);				 
+	gb.begin();				 
 	sprite_list.append_value(test_key);			 
-	sprite_list.append_value(test_door);		 
+	sprite_list.append_value(test_door);		
+  sprite_list.append_value(enemy); 
 	sprite_list.append_value(test_player);	 
 	sprite_list.append_value(test_computer);
 
@@ -49,7 +50,7 @@ void setup()
 	mymap.insert_type_at(*door_pos, TileType::door);
 
 	enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
-	path_test = mymap.get_path_grid(Point(8, 40));
+	//path_test = mymap.get_path_grid(Point(8, 40));
 }
 
 void loop()
@@ -76,15 +77,23 @@ void loop()
 
   if (mymap.line_of_sight(enemy->get_direction(), enemy->get_position(), test_player->get_position()))
   {
-    path_test = mymap.get_path_grid(test_player->get_position());
-    enemy->set_path_grid(path_test);
+    enemy->set_path_grid(mymap.get_path_grid(test_player->get_position()));
   }
-	enemy->move();
-	if (enemy->has_reached_target())
+  else if (test_trap != nullptr && test_trap->is_active())
+  {
+    enemy->set_path_grid(mymap.get_path_grid(test_trap->get_position()));
+  }
+	else if (enemy->has_reached_target())
 	{
-    path_test = mymap.get_path_grid(enemy->get_next_target());
-		enemy->set_path_grid(path_test);
+		enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
 	}
+  enemy->move();
+  if (enemy->get_position() == test_trap->get_position() && test_trap->is_active())
+  {
+    sprite_list.delete_element(test_trap);
+    test_trap = nullptr;
+  }
+ 
 	if (gb.buttons.repeat(BUTTON_HOME, 0))
 	{
 		gb.display.drawImage(0, 0, my_img_buf);
@@ -169,7 +178,7 @@ void loop()
 		if (gb.buttons.pressed(BUTTON_B) && test_player->get_current_item() == TRAP && (mymap.is_type_at(test_player->get_position(), TileType::not_solid) || mymap.is_type_at(test_player->get_position(), TileType::player)))
 		{
 			test_player->set_trap_count(-1);
-			Trap *test_trap = new Trap(test_player->get_position().x, test_player->get_position().y, 8, 8, 35);
+			test_trap = new Trap(test_player->get_position().x / 8 *8, test_player->get_position().y / 8 *8, 8, 8, 35, true);
 
 			sprite_list.push_value(test_trap);
 			mymap.insert_type_at(test_player->get_position(), TileType::trap);
