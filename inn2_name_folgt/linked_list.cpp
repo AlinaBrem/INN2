@@ -1,6 +1,7 @@
 
-#ifndef LINKEDLIST
-#define LINKEDLIST
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
+
 template <class T>
 class LinkedList
 {
@@ -24,7 +25,6 @@ private:
     Node *start = nullptr;
 
 public:
-    
     class Iterator
     {
     private:
@@ -34,15 +34,21 @@ public:
     public:
         ~Iterator()
         {
-          delete(fake_start_node);
+            delete (fake_start_node);
         }
+
         bool has_next()
         {
             if (current_node->next != nullptr)
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }
         }
+
         T *get_next()
         {
             if (current_node->next != nullptr)
@@ -51,7 +57,9 @@ public:
                 return &current_node->value;
             }
             else
+            {
                 return nullptr;
+            }
         }
 
         static Iterator new_iterator(Node *n)
@@ -100,11 +108,18 @@ public:
     {
         Node *temp = start;
         for (int y = i; y > 0 && temp != nullptr; y--)
+        {
             temp = temp->next;
+        }
+
         if (temp != nullptr)
+        {
             return &temp->value;
+        }
+
         return nullptr;
     }
+
     //delete function gets element and iterates through list to delete it, so that we dont have to use indizes in a linked list
     // (if the exact same T occurs more than once in list only the first one is deleted)
     bool delete_element(T element)
@@ -113,24 +128,29 @@ public:
         {
             return false;
         }
-        Node * temp = start;
+
+        Node *temp = start;
+
         if (start->value == element)
         {
             start = start->next;
-            delete(temp);
+            delete (temp);
             return true;
         }
+
         while (temp->next != nullptr)
         {
             if (element == temp->next->value)
             {
-                Node * temp2 = temp->next;
+                Node *temp2 = temp->next;
                 temp->next = temp->next->next;
                 delete (temp2);
                 return true;
             }
+
             temp = temp->next;
         }
+
         return false;
     }
 
@@ -139,6 +159,7 @@ public:
     {
         return Iterator::new_iterator(start);
     }
+
     void delete_list()
     {
         while (start != nullptr)
@@ -148,11 +169,11 @@ public:
             delete (temp);
         }
     }
+
     ~LinkedList()
     {
         delete_list();
     }
-
-    // TODO: Get number of nodes
 };
-#endif
+
+#endif //LINKEDLIST_H

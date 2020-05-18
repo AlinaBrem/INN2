@@ -9,4 +9,3 @@ bool Trap::is_active()
 {
   return this->active;
 }
-

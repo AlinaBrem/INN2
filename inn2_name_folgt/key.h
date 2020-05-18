@@ -7,7 +7,7 @@ class Key : public Sprite
 {
 public:
   Key(int x, int y, int w, int h, int t);
-  
+
   ~Key() = default;
 };
 

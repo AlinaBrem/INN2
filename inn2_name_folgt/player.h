@@ -17,32 +17,24 @@ class Player : public Sprite
 private:
     int width;
     int height;
-
     int speed;
-
     int health;
-    bool is_dead;
-
     int frame_counter;
     int number_animation;
-
     int trap_count;
+    int current_item_index;
 
+    bool is_dead;
     bool is_interacting;
-
     bool is_colliding_front_left;
     bool is_colliding_front_right;
-
     bool is_colliding_back_left;
     bool is_colliding_back_right;
-
     bool is_colliding_middle_right_front;
     bool is_colliding_middle_right_back;
-
     bool is_colliding_middle_left_front;
     bool is_colliding_middle_left_back;
 
-    int current_item_index;
     String inventory[MAX_ITEMS];
 
     Direction direction;

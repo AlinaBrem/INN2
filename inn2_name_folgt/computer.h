@@ -34,7 +34,7 @@ public:
 
   // returns the position of the sprite as a Point
   Point get_position();
-  
+
   // prints the interaction point of the computer
   // always in front of the computer
   void print_interaction_point();

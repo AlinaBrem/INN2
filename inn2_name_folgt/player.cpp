@@ -371,7 +371,7 @@ void Player::set_trap_count(int value)
         this->trap_count = 0;
     }
 
-    if(this->trap_count == 0)
+    if (this->trap_count == 0)
     {
         this->delete_item(TRAP);
     }

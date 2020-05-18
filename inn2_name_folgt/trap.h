@@ -5,13 +5,15 @@
 
 class Trap : public Sprite
 {
-public:
-  Trap(int x, int y, int w, int h, int t, bool active);
-  
-  ~Trap() = default;
-  bool is_active();
 private:
   bool active;
+
+public:
+  Trap(int x, int y, int w, int h, int t, bool active);
+
+  ~Trap() = default;
+
+  bool is_active();
 };
 
 #endif //TRAP_H

@@ -21,6 +21,7 @@ private:
     TileType **tile_type_grid;
     Point dimensions;
     Point neighbors[4];
+
     Map(int w, int h) : dimensions(w, h), neighbors{Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1)}
     {
         int grid_width = dimensions.x / FACTOR;
@@ -57,6 +58,7 @@ public:
             ll->append_value(Sprite::new_wall_r(72, i * 8));
             map1.tile_type_grid[9][i] = solid;
         }
+
         //wand unten
         for (int i = 1; i < 9; i++)
         {
@@ -215,24 +217,28 @@ public:
         int x = target_point.x / FACTOR;
         int y = target_point.y / FACTOR;
         uint8_t *path_grid = new uint8_t[80]; //10*8
+
         for (int i = 0; i < 80; i++)
         {
             path_grid[i] = 80;
         }
+
         LinkedList<Distance_pp> distance_pp;
         distance_pp.append_value({Point(x, y), 0});
         LinkedList<Distance_pp>::Iterator iterator = distance_pp.get_Iterator();
         path_grid[x + y * 10] = tile_type_grid[x][y] == not_solid || tile_type_grid[x][y] == trap ? 0 : 80;
         Distance_pp *current;
+
         while (iterator.has_next())
         {
             current = iterator.get_next();
+
             for (Point neighbor : neighbors)
             {
                 Point current_point = current->point + neighbor;
                 if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x + current_point.y * 10] == 80)
                 {
-                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid || this->tile_type_grid[current_point.x][current_point.y] == trap )
+                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid || this->tile_type_grid[current_point.x][current_point.y] == trap)
                     {
                         path_grid[(current_point.x) + (current_point.y * 10)] = current->distance + 1;
                         distance_pp.append_value({current_point, current->distance + 1});
@@ -244,43 +250,62 @@ public:
                     }
                     else
                     {
-                        path_grid[current_point.x + current_point.y * 10] = 70;   
+                        path_grid[current_point.x + current_point.y * 10] = 70;
                     }
                 }
             }
         }
+
         return path_grid;
     }
 
     //checks if there is a line of sight between two given points on the map
-    bool line_of_sight (Direction direction, Point a, Point b)
+    bool line_of_sight(Direction direction, Point a, Point b)
     {
         int delta_x = b.x - a.x;
         int delta_y = b.y - a.y;
+
         //check if basic direction is valid
-        switch(direction)
+        switch (direction)
         {
-        case Direction::right: 
+        case Direction::right:
             if (a.x > b.x || abs(delta_y) > 10)
-              return false;
+            {
+                return false;
+            }
+
             break;
+
         case Direction::down:
             if (a.y > b.y || abs(delta_x) > 10)
-              return false;
+            {
+                return false;
+            }
+
             break;
+
         case Direction::left:
             if (a.x < b.x || abs(delta_y) > 10)
-              return false;
+            {
+                return false;
+            }
+
             break;
+
         case Direction::up:
             if (a.y < b.y || abs(delta_x) > 10)
-              return false;
+            {
+                return false;
+            }
+
             break;
         }
+
         //if so, check cell by cell in the correct direction
         Point current_grid_cell = Point(a.x / 8, a.y / 8);
         Point current_pixel_point = Point(a.x, a.y);
-        int number_of_steps = sqrt(pow(delta_x, 2)+pow(delta_y, 2));
+        int number_of_steps = sqrt(pow(delta_x, 2) + pow(delta_y, 2));
+
         for (int i = 0; i < number_of_steps; i++)
         {
             current_pixel_point = Point(a.x + i * delta_x / number_of_steps, a.y + i * delta_y / number_of_steps);
@@ -293,6 +318,7 @@ public:
                 }
             }
         }
+
         return true;
     }
 };

@@ -1,13 +1,8 @@
 #include "sprite.cpp"
+#include "enum.h"
 
 #ifndef DOOR_H
 #define DOOR_H
-
-enum class DoorTextureId 
-{
-  open = 49,
-  closed = 48 
-};
 
 class Door : public Sprite
 {
