@@ -123,7 +123,3 @@ void Bottle::print_flight_path()
   }
 }
 
-Point Bottle::get_position()
-{
-  return this->position;
-}

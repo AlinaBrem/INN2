@@ -83,9 +83,6 @@ public:
     // handles the walking animation in all directions
     void play_walk_animation(PlayerTextureId start_texture_id);
 
-    // returns the position of the sprite as a Point
-    Point get_position();
-
     // returns the currently active interaction point
     Point get_interaction_point();
 

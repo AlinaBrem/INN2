@@ -12,7 +12,13 @@ Enemy::Enemy(int x, int y, int w, int h, int t, Point b) : Sprite(x, y, w, h, t)
   this->number_animation = 0;
   this->path_grid = nullptr;
   this->reached_target = false;
+  this->stun_counter = 0;
 };
+
+void Enemy::set_stunned()
+{
+  this->stun_counter = 75; //3 sek
+}
 
 //set pathgrid assumes that only this enemy is using this grid & its safe to delete it
 void Enemy::set_path_grid(uint8_t *new_grid)
@@ -43,6 +49,11 @@ Direction Enemy::get_direction()
 
 void Enemy::move()
 {
+  if (this->stun_counter > 0)
+  {
+    stun_counter--;
+    return;
+  }
   //enemy only moves every three frames
   if (frame_counter < 2)
   {

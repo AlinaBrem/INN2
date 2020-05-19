@@ -33,9 +33,6 @@ public:
   // returns the destination point
   Point get_destination();
 
-  // returns the current position of the bottle
-  Point get_position();
-
   // prints the current direction of the bottle
   void print_direction();
 

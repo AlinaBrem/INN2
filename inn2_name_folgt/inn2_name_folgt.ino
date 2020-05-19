@@ -62,6 +62,7 @@ void loop()
 {
 	gb.waitForUpdate();
 	gb.display.clear();
+  gb.lights.clear();
 
 	// Player movement
 	if (gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD))
@@ -96,6 +97,12 @@ void loop()
 	}
 
 	enemy->move();
+
+  // enemy arrests player
+  if ((abs(test_player->get_position().x - enemy->get_position().x) < 6 &&  abs(test_player->get_position().y - enemy->get_position().y) < 6))
+  {
+    gb.lights.fill(RED);
+  }
 
 	if (enemy->get_position() == test_trap->get_position() && test_trap->get_is_active())
 	{
@@ -207,9 +214,10 @@ void loop()
 		if (bottle != nullptr)
 		{
 			// bottle colliding with enemy
-			if (mymap.get_tile_grid_index(bottle->get_position()) == mymap.get_tile_grid_index(enemy->get_position()))
+			if (abs(bottle->get_position().x - enemy->get_position().x) < 6 &&  abs(bottle->get_position().y - enemy->get_position().y) < 6)
 			{
-				test_player->print_message("eneeemy");
+        enemy->set_stunned();
+        gb.lights.fill(PURPLE);
 				bottle->set_is_colliding(true);
 			}
 

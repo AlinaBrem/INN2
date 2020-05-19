@@ -13,6 +13,7 @@ private:
 
   int frame_counter;
   int number_animation;
+  int stun_counter;
 
   Point delta;
   Point neighbors[4];
@@ -30,6 +31,8 @@ public:
   Point get_next_target();
 
   void move();
+
+  void set_stunned();
 
   void set_path_grid(uint8_t *new_grid);
 

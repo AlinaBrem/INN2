@@ -307,11 +307,6 @@ void Player::print_collision_points()
                         this->position.x + this->width, this->position.y + this->height - 1);
 }
 
-Point Player::get_position()
-{
-    return this->position;
-}
-
 void Player::print_message(String message)
 {
     gb.display.println(message);
