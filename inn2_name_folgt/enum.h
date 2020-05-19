@@ -73,7 +73,8 @@ enum TileType
   not_solid,
   key,
   computer,
-  door,
+  door_open,
+  door_closed,
   player,
   trap
 };

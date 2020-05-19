@@ -1,5 +1,12 @@
 Hinweise für Levelbauerlinge:
 
 alle Objekte & Enemy immer mit durch 8 teilbaren Koordinaten platzieren (/initialisieren)
-nie mehr als eine Falle pro Level (enemy sonst verwirrt)
 player als letztes in spritelist einhängen (enemy zumindest nach door) -> wegen draw()
+
+Enemys nicht wiederverwenden (für neue Bereiche), sondern delete und new (weil interne states)
+Player aber unbedingt wiederverwenden für neuen Bereich (Inventar)
+bei neuem LEVEL entweder Falleninventory clearen oder neuer Player
+
+nie mehr als eine Falle pro Bereich (enemy sonst verwirrt)
+nie mehr als eine Tür pro Bereich (derzeit kein handling)
+

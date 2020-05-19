@@ -52,7 +52,7 @@ void setup()
 	sprite_list.append_value(test_computer);
 
 	mymap.insert_type_at(*computer_pos, TileType::computer);
-	mymap.insert_type_at(*door_pos, TileType::door);
+	mymap.insert_type_at(*door_pos, TileType::door_closed);
 
 	enemy->set_path_grid(mymap.get_path_grid(enemy->get_next_target()));
 	//path_test = mymap.get_path_grid(Point(8, 40));
@@ -101,6 +101,7 @@ void loop()
   // enemy arrests player
   if ((abs(test_player->get_position().x - enemy->get_position().x) < 6 &&  abs(test_player->get_position().y - enemy->get_position().y) < 6))
   {
+    //to the level builderlings : THIS IS WHERE THE LOAD FIRST MAP AGAIN LOGIC GOES!!
     gb.lights.fill(RED);
   }
 
@@ -145,7 +146,7 @@ void loop()
 		for (int i = 0; i < NUM_COLLISION_POINTS; i++)
 		{
 			// check if player is colliding with solid, computer or door
-			if (mymap.is_type_at(collision_points[i], TileType::solid) || mymap.is_type_at(collision_points[i], TileType::computer) || mymap.is_type_at(collision_points[i], TileType::door) && test_door->get_is_locked())
+			if (mymap.is_type_at(collision_points[i], TileType::solid) || mymap.is_type_at(collision_points[i], TileType::computer) || mymap.is_type_at(collision_points[i], TileType::door_closed))
 			{
 				// set is_colliding
 				test_player->set_is_colliding(true, i);
@@ -176,10 +177,11 @@ void loop()
 		if (gb.buttons.pressed(BUTTON_A))
 		{
 			// check if the player can interact with a door (open, close)
-			if (test_player->get_current_item() == KEY && mymap.is_type_at(test_player->get_interaction_point(), TileType::door))
+			if (test_player->get_current_item() == KEY && (mymap.is_type_at(test_player->get_interaction_point(), TileType::door_closed) || mymap.is_type_at(test_player->get_interaction_point(), TileType::door_open)))
 			{
 				test_door->set_is_locked(!test_door->get_is_locked());
 				test_player->reset_collision_points();
+        mymap.insert_type_at(test_player->get_interaction_point(), mymap.is_type_at(test_player->get_interaction_point(), TileType::door_closed) ? TileType::door_open : TileType::door_closed); 
 			}
 
 			// place trap on the current player position
@@ -228,7 +230,7 @@ void loop()
 			}
 
 			// bottle colliding with closed_door
-			if (mymap.is_type_at(bottle->get_position(), TileType::door) && test_door->get_is_locked())
+			if (mymap.is_type_at(bottle->get_position(), TileType::door_closed))
 			{
 				bottle->set_is_colliding(true);
 			}

@@ -206,8 +206,11 @@ public:
         case TileType::computer:
             return "computer";
 
-        case TileType::door:
-            return "door";
+        case TileType::door_closed:
+            return "door_closed";
+
+        case TileType::door_open:
+            return "door_open";
 
         case TileType::player:
             return "player";
@@ -247,12 +250,12 @@ public:
                 Point current_point = current->point + neighbor;
                 if (current_point.x >= 0 && current_point.x < 10 && current_point.y >= 0 && current_point.y < 8 && path_grid[current_point.x + current_point.y * 10] == 80)
                 {
-                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid || this->tile_type_grid[current_point.x][current_point.y] == trap)
+                    if (this->tile_type_grid[current_point.x][current_point.y] == not_solid || this->tile_type_grid[current_point.x][current_point.y] == trap || this->tile_type_grid[current_point.x][current_point.y] == door_open)
                     {
                         path_grid[(current_point.x) + (current_point.y * 10)] = current->distance + 1;
                         distance_pp.append_value({current_point, current->distance + 1});
                     }
-                    else if (this->tile_type_grid[current_point.x][current_point.y] == door)
+                    else if (this->tile_type_grid[current_point.x][current_point.y] == door_closed)
                     {
                         path_grid[current_point.x + current_point.y * 10] = 75;
                         distance_pp.append_value({current_point, current->distance + 1});
