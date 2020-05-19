@@ -11,8 +11,13 @@
 #include "key.h"
 #include "trap.h"
 #include "enum.h"
+#include "bottle.h"
 
 #define FRAME_PERIOD 2
+#define TEXTURE_WIDTH 8
+#define TEXTURE_HEIGHT 8
+#define BOTTLE_WIDTH 4
+#define BOTTLE_HEIGHT 4
 
 LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
 
@@ -24,15 +29,16 @@ Point *computer_pos = new Point(8, 8);
 Point *door_pos = new Point(24, 24);
 
 Trap *test_trap = nullptr;
-Key *test_key = new Key(key_pos->x, key_pos->y, 8, 8, 44);
-Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, 8, 8, 30, 1);
-Door *test_door = new Door(door_pos->x, door_pos->y, 8, 8, 48);
+Bottle *bottle = nullptr;
+Key *test_key = new Key(key_pos->x, key_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 44);
+Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 30, 1);
+Door *test_door = new Door(door_pos->x, door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 48);
 
-Player *test_player = new Player(start_pos->x, start_pos->y, 8, 8, 60);
+Player *test_player = new Player(start_pos->x, start_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60);
 
 Map mymap = Map::load_map1(&sprite_list);
 
-Enemy *enemy = new Enemy(32, 16, 8, 8, 60, Point(32, 32));
+Enemy *enemy = new Enemy(32, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60, Point(32, 32));
 
 //uint8_t *path_test = NULL;
 
@@ -45,7 +51,6 @@ void setup()
 	sprite_list.append_value(test_player);
 	sprite_list.append_value(test_computer);
 
-	mymap.insert_type_at(*key_pos, TileType::key);
 	mymap.insert_type_at(*computer_pos, TileType::computer);
 	mymap.insert_type_at(*door_pos, TileType::door);
 
@@ -58,6 +63,7 @@ void loop()
 	gb.waitForUpdate();
 	gb.display.clear();
 
+	// Player movement
 	if (gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD))
 	{
 		test_player->move_up();
@@ -75,11 +81,12 @@ void loop()
 		test_player->move_right();
 	}
 
+	// enemy movement
 	if (mymap.line_of_sight(enemy->get_direction(), enemy->get_position(), test_player->get_position()))
 	{
 		enemy->set_path_grid(mymap.get_path_grid(test_player->get_position()));
 	}
-	else if (test_trap != nullptr && test_trap->is_active())
+	else if (test_trap != nullptr && test_trap->get_is_active())
 	{
 		enemy->set_path_grid(mymap.get_path_grid(test_trap->get_position()));
 	}
@@ -90,15 +97,17 @@ void loop()
 
 	enemy->move();
 
-	if (enemy->get_position() == test_trap->get_position() && test_trap->is_active())
+	if (enemy->get_position() == test_trap->get_position() && test_trap->get_is_active())
 	{
 		sprite_list.delete_element(test_trap);
 		test_trap = nullptr;
 	}
 
-	if (gb.buttons.repeat(BUTTON_B, 0))
+	// debug
+	if (gb.buttons.repeat(BUTTON_MENU, 0))
 	{
 		gb.display.drawImage(0, 0, my_img_buf);
+
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
@@ -136,14 +145,14 @@ void loop()
 			}
 
 			// check if player is colliding with the key
-			if (mymap.is_type_at(collision_points[i], TileType::key))
+			if (mymap.get_tile_grid_index(collision_points[i]) == mymap.get_tile_grid_index(*key_pos))
 			{
 				test_player->add_item(KEY);
 
-				// delete key from tiletypegrid
-				mymap.delete_type_at(*key_pos, TileType::key);
-				//delete key from linked list
+				// delete key from linked list
 				sprite_list.delete_element(test_key);
+				delete key_pos;
+				key_pos = nullptr;
 			}
 		}
 
@@ -151,42 +160,86 @@ void loop()
 		if (mymap.is_type_at(*test_computer->get_interaction_point(), TileType::player) && mymap.is_type_at(test_player->get_interaction_point(), TileType::computer))
 		{
 			test_player->set_is_colliding(true);
-
-			if (gb.buttons.pressed(BUTTON_A))
-			{
-				test_computer->set_is_on(true);
-				test_player->set_is_interacting(true);
-			}
 		}
 		else
 		{
 			test_computer->set_is_on(test_player->get_is_interacting());
 		}
 
-		// check if the player can interact with a door (open, close)
-		if (mymap.is_type_at(test_player->get_interaction_point(), TileType::door))
+		if (gb.buttons.pressed(BUTTON_A))
 		{
-			if (test_player->get_current_item() == KEY)
+			// check if the player can interact with a door (open, close)
+			if (test_player->get_current_item() == KEY && mymap.is_type_at(test_player->get_interaction_point(), TileType::door))
 			{
-				if (gb.buttons.pressed(BUTTON_A))
-				{
-					test_door->set_is_locked(!test_door->get_is_locked());
-					test_player->reset_collision_points();
-				}
+				test_door->set_is_locked(!test_door->get_is_locked());
+				test_player->reset_collision_points();
+			}
+
+			// place trap on the current player position
+			if (test_player->get_current_item() == TRAP && test_player->get_current_item_count() > 0 && (mymap.is_type_at(test_player->get_position(), TileType::not_solid) || mymap.is_type_at(test_player->get_position(), TileType::player)))
+			{
+				test_player->delete_item(TRAP);
+				test_trap = new Trap(test_player->get_interaction_point().x / 8 * 8, test_player->get_interaction_point().y / 8 * 8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 35, true);
+
+				sprite_list.push_value(test_trap);
+				mymap.insert_type_at(test_player->get_position(), TileType::trap);
+			}
+
+			// interaction with the computer
+			if (mymap.is_type_at(*test_computer->get_interaction_point(), TileType::player) && mymap.is_type_at(test_player->get_interaction_point(), TileType::computer))
+			{
+				test_computer->set_is_on(true);
+				test_player->set_is_interacting(true);
+			}
+
+			// throw bottle
+			if (test_player->get_current_item() == BOTTLE && test_player->get_current_item_count() > 0 && bottle == nullptr)
+			{
+				test_player->delete_item(BOTTLE);
+
+				bottle = new Bottle(test_player->get_interaction_point().x, test_player->get_interaction_point().y, BOTTLE_WIDTH, BOTTLE_HEIGHT, (int)BottleTextureId::not_broken, test_player->get_direction());
+
+				sprite_list.push_value(bottle);
 			}
 		}
 
-		// place trap on the current player position
-		if (gb.buttons.pressed(BUTTON_B) && test_player->get_current_item() == TRAP && (mymap.is_type_at(test_player->get_position(), TileType::not_solid) || mymap.is_type_at(test_player->get_position(), TileType::player)))
+		// bottle movement
+		if (bottle != nullptr)
 		{
-			test_player->set_trap_count(-1);
-			test_trap = new Trap(test_player->get_position().x / 8 * 8, test_player->get_position().y / 8 * 8, 8, 8, 35, true);
+			// bottle colliding with enemy
+			if (mymap.get_tile_grid_index(bottle->get_position()) == mymap.get_tile_grid_index(enemy->get_position()))
+			{
+				test_player->print_message("eneeemy");
+				bottle->set_is_colliding(true);
+			}
 
-			sprite_list.push_value(test_trap);
-			mymap.insert_type_at(test_player->get_position(), TileType::trap);
+			// bottle colliding with solid
+			if (mymap.is_type_at(bottle->get_position(), TileType::solid))
+			{
+				bottle->set_is_colliding(true);
+			}
+
+			// bottle colliding with closed_door
+			if (mymap.is_type_at(bottle->get_position(), TileType::door) && test_door->get_is_locked())
+			{
+				bottle->set_is_colliding(true);
+			}
+
+			// if bottle is colliding with something, delete it
+			if (bottle->get_is_colliding())
+			{
+				sprite_list.delete_element(bottle);
+				delete bottle;
+				bottle = nullptr;
+			}
+			else
+			{
+				bottle->get_next_point();
+			}
 		}
 
-		if (gb.buttons.pressed(BUTTON_MENU))
+		// get next item
+		if (gb.buttons.pressed(BUTTON_B))
 		{
 			test_player->next_item();
 		}

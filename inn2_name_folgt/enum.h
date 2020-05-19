@@ -35,6 +35,12 @@ enum class DoorTextureId
   closed = 48
 };
 
+enum class BottleTextureId
+{
+  not_broken = 34,
+  broken = 35,
+};
+
 // position of the collision points
 //    *     *
 //  *         *

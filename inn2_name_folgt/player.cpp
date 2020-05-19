@@ -7,12 +7,14 @@ Player::Player(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
     this->speed = 1;
     this->health = 1;
     this->is_dead = false;
-    this->frame_counter = 0;
     this->number_animation = 0;
     this->direction = Direction::up;
     this->is_interacting = false;
-    this->trap_count = 1;
-    this->current_item_index = 0;
+    this->current_item = TRAP;
+
+    this->inventory[BOTTLE] = 0;
+    this->inventory[TRAP] = 0;
+    this->inventory[KEY] = 0;
 
     this->add_item(BOTTLE);
     this->add_item(TRAP);
@@ -357,66 +359,82 @@ void Player::print_interaction_points()
                         this->position.x - 1, this->position.y + this->height / 2);
 }
 
-int Player::get_trap_count()
+void Player::add_item(int item)
 {
-    return this->trap_count;
+    this->inventory[item]++;
 }
 
-void Player::set_trap_count(int value)
+void Player::delete_item(int item)
 {
-    this->trap_count += value;
+    this->inventory[item]--;
 
-    if (this->trap_count < 0)
+    if (this->inventory[item] < 0)
     {
-        this->trap_count = 0;
-    }
-
-    if (this->trap_count == 0)
-    {
-        this->delete_item(TRAP);
-    }
-}
-
-void Player::add_item(String item)
-{
-    for (int i = 0; i < MAX_ITEMS; i++)
-    {
-        if (this->inventory[i] == "")
-        {
-            this->inventory[i] = item;
-            return;
-        }
-    }
-}
-
-void Player::delete_item(String item)
-{
-    for (int i = 0; i < MAX_ITEMS; i++)
-    {
-        if (this->inventory[i] == item)
-        {
-            this->inventory[i] = "";
-            return;
-        }
+        this->inventory[item] = 0;
     }
 }
 
 void Player::print_current_item()
 {
-    while (this->inventory[this->current_item_index] == "")
+    switch (this->current_item)
     {
-        this->next_item();
+    case KEY:
+        gb.display.print("Key: ");
+        break;
+
+    case TRAP:
+        gb.display.print("Trap: ");
+        break;
+
+    case BOTTLE:
+        gb.display.print("Bottle: ");
+        break;
     }
 
-    gb.display.println(this->inventory[this->current_item_index]);
+    gb.display.print(this->get_current_item_count());
 }
 
-String Player::get_current_item()
+int Player::get_current_item()
 {
-    return this->inventory[this->current_item_index];
+    return this->current_item;
+}
+
+int Player::get_current_item_count()
+{
+    return this->inventory[this->current_item];
 }
 
 void Player::next_item()
 {
-    this->current_item_index = (this->current_item_index + 1) % 3;
+    this->current_item = (this->current_item + 1) % 3;
+}
+
+Direction Player::get_direction()
+{
+    return this->direction;
+}
+
+void Player::print_direction()
+{
+    switch (this->direction)
+    {
+    case Direction::up:
+        gb.display.println("Up");
+        break;
+
+    case Direction::down:
+        gb.display.println("Down");
+        break;
+
+    case Direction::left:
+        gb.display.println("Left");
+        break;
+
+    case Direction::right:
+        gb.display.println("Right");
+        break;
+
+    default:
+        break;
+    }
 }

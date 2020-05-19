@@ -1,11 +1,11 @@
 #include "trap.h"
 
-Trap::Trap(int x, int y, int w, int h, int t, bool active) : Sprite(x, y, w, h, t)
+Trap::Trap(int x, int y, int w, int h, int t, bool is_active) : Sprite(x, y, w, h, t)
 {
-  this->active = active;
+  this->is_active = is_active;
 };
 
-bool Trap::is_active()
+bool Trap::get_is_active()
 {
-  return this->active;
+  return this->is_active;
 }

@@ -138,6 +138,15 @@ public:
         }
     }
 
+    // return the tile_grid index of a position
+    Point get_tile_grid_index(Point position)
+    {
+        int x = position.x / FACTOR;
+        int y = position.y / FACTOR;
+
+        return Point(x, y);
+    }
+
     // returns true if a concrete type is at a given position
     // returns false if theres any ohter type
     bool is_type_at(Point position, TileType type)

@@ -8,9 +8,9 @@
 
 #define NUM_COLLISION_POINTS 8
 #define MAX_ITEMS 3
-#define KEY "Key"
-#define TRAP "Trap"
-#define BOTTLE "Bottle"
+#define KEY 0
+#define TRAP 1
+#define BOTTLE 2
 
 class Player : public Sprite
 {
@@ -19,10 +19,8 @@ private:
     int height;
     int speed;
     int health;
-    int frame_counter;
     int number_animation;
-    int trap_count;
-    int current_item_index;
+    int current_item;
 
     bool is_dead;
     bool is_interacting;
@@ -35,7 +33,7 @@ private:
     bool is_colliding_middle_left_front;
     bool is_colliding_middle_left_back;
 
-    String inventory[MAX_ITEMS];
+    int inventory[MAX_ITEMS];
 
     Direction direction;
 
@@ -48,10 +46,9 @@ public:
 
     bool get_is_interacting();
 
-    // adds a given value to the players trap_count (subtracts if value < 0)
-    void set_trap_count(int value);
 
-    int get_trap_count();
+    // returns the current direction of the player
+    Direction get_direction();
 
     // returns a pointer with the current coordinates(x,y) of all 12 collision points
     Point *get_collision_points();
@@ -96,13 +93,15 @@ public:
     void reset_collision_points();
 
     // adds an item to the inventory
-    void add_item(String item);
+    void add_item(int item);
 
     // deletes the currently selected item, based on its name
-    void delete_item(String item);
+    void delete_item(int item);
 
-    // returns the value(name) of the current item as a string
-    String get_current_item();
+    // returns the value of the current item as int
+    int get_current_item();
+
+    int get_current_item_count();
 
     void next_item();
 
@@ -117,6 +116,9 @@ public:
 
     // prints the interaction collision point (1 pixel in front of the player)
     void print_interaction_points();
+
+    // prints the current direction of the player
+    void print_direction();
 };
 
 #endif //PLAYER_H
