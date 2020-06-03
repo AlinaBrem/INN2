@@ -120,7 +120,7 @@ void Enemy::move()
     }
   }
 
-  this->tex_id = direction == Direction::up ? 61 : direction == Direction::down ? 71 : direction == Direction::right ? 66 : 76;
+  this->tex_id = direction == Direction::up ? 81 : direction == Direction::down ? 91 : direction == Direction::right ? 86 : 96;
   //animation
   if (delta.x != 0 || delta.y != 0)
   {
