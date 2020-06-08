@@ -188,7 +188,7 @@ void loop()
 			if (test_player->get_current_item() == TRAP && test_player->get_current_item_count() > 0 && (mymap.is_type_at(test_player->get_position(), TileType::not_solid) || mymap.is_type_at(test_player->get_position(), TileType::player)))
 			{
 				test_player->delete_item(TRAP);
-				test_trap = new Trap(test_player->get_interaction_point().x / 8 * 8, test_player->get_interaction_point().y / 8 * 8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 35, true);
+				test_trap = new Trap(test_player->get_interaction_point().x / 8 * 8, test_player->get_interaction_point().y / 8 * 8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 52, true);
 
 				sprite_list.push_value(test_trap);
 				mymap.insert_type_at(test_player->get_position(), TileType::trap);
