@@ -8,6 +8,10 @@ Bottle::Bottle(int x, int y, int w, int h, int t, Direction direction) : Sprite(
   this->is_colliding = false;
 }
 
+Bottle::Bottle(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t),
+                                                    start(x, y),
+                                                    destination(x, y){};
+
 bool Bottle::get_is_colliding()
 {
   return this->is_colliding;
@@ -122,4 +126,3 @@ void Bottle::print_flight_path()
     break;
   }
 }
-

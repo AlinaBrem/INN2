@@ -21,6 +21,8 @@ private:
 public:
   Bottle(int x, int y, int w, int h, int t, Direction direction);
 
+  Bottle(int x, int y, int w, int h, int t);
+
   ~Bottle() = default;
 
   bool get_is_colliding();

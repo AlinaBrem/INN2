@@ -17,7 +17,6 @@ Player::Player(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
     this->inventory[KEY] = 0;
 
     this->add_item(BOTTLE);
-    this->add_item(TRAP);
     this->reset_collision_points();
 };
 

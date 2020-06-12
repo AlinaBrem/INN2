@@ -1,22 +1,46 @@
 #include "door.h"
 
-Door::Door(int x, int y, int w, int h, int t) : Sprite(x, y, w, h, t)
+Door::Door(int x, int y, int w, int h, int t, int direction, bool is_greend_door) : Sprite(x, y, w, h, t)
 {
   this->is_locked = true;
+  this->direction = (Direction)direction;
+  this->is_green_door = is_green_door;
 };
 
 void Door::set_is_locked(bool value)
 {
   // change is_locked value and texture id of the door
-  if (value == true)
+  this->is_locked = value;
+
+  if (value)
   {
-    this->is_locked = value;
-    this->tex_id = (int)DoorTextureId::closed;
+    if (this->direction == Direction::up || this->direction == Direction::down)
+    {
+      this->tex_id = this->is_green_door
+                         ? (int)GreenDoorTextureId::up_closed
+                         : (int)RedDoorTextureId::up_closed;
+    }
+    else
+    {
+      this->tex_id = this->is_green_door
+                         ? (int)GreenDoorTextureId::left_closed
+                         : (int)RedDoorTextureId::left_closed;
+    }
   }
   else
   {
-    this->is_locked = value;
-    this->tex_id = (int)DoorTextureId::open;
+    if (this->direction == Direction::up || this->direction == Direction::down)
+    {
+      this->tex_id = this->is_green_door
+                         ? (int)GreenDoorTextureId::up_open
+                         : (int)RedDoorTextureId::up_open;
+    }
+    else
+    {
+      this->tex_id = this->is_green_door
+                         ? (int)GreenDoorTextureId::left_open
+                         : (int)RedDoorTextureId::left_open;
+    }
   }
 }
 

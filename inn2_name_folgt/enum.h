@@ -29,16 +29,26 @@ enum class PlayerTextureId
   interacting_right = 69,
 };
 
-enum class DoorTextureId
+enum class RedDoorTextureId
 {
-  open = 49,
-  closed = 48
+  up_open = 39,
+  up_closed = 38,
+  left_open = 49,
+  left_closed = 48
+};
+
+enum class GreenDoorTextureId
+{
+  up_open = 29,
+  up_closed = 24,
+  left_open = 27,
+  left_closed = 25
 };
 
 enum class BottleTextureId
 {
-  not_broken = 34,
-  broken = 35,
+  not_broken = 52,
+  broken = 52
 };
 
 // position of the collision points
@@ -73,10 +83,18 @@ enum TileType
   not_solid,
   key,
   computer,
-  door_open,
-  door_closed,
+  red_door_open,
+  red_door_closed,
   player,
-  trap
+  trap,
+  green_door_open,
+  green_door_closed
+};
+
+enum class TrapTextureId
+{
+  armed = 51,
+  disarmed = 50
 };
 
 #endif //ENUM_H

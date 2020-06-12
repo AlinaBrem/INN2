@@ -7,7 +7,7 @@
 class Door : public Sprite
 {
 public:
-  Door(int x, int y, int w, int h, int t);
+  Door(int x, int y, int w, int h, int t, int direction, bool is_greend_door);
 
   ~Door() = default;
 
@@ -17,6 +17,9 @@ public:
 
 private:
   bool is_locked;
+  bool is_green_door;
+
+  Direction direction;
 };
 
 #endif //DOOR_H
