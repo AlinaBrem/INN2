@@ -139,6 +139,12 @@ void Player::set_is_colliding(bool value)
     }
 }
 
+void Player::set_position(int x, int y)
+{
+    this->position.x = x;
+    this->position.y = y;
+}
+
 void Player::reset_collision_points()
 {
     this->is_colliding_front_left = false;

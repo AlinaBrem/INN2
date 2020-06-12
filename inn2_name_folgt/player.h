@@ -46,7 +46,6 @@ public:
 
     bool get_is_interacting();
 
-
     // returns the current direction of the player
     Direction get_direction();
 
@@ -55,6 +54,9 @@ public:
 
     // returns current health of the player
     int get_health();
+
+    // sets Position
+    void set_position(int x, int y);
 
     // sets a specific is_colliding variable based on an index
     void set_is_colliding(bool value, int i);
