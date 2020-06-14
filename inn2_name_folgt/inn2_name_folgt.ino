@@ -20,39 +20,34 @@
 #define BOTTLE_HEIGHT 4
 
 LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
+Map mymap = Map::load_map2(&sprite_list);
 
-// start position of all objects
-//Point *start_pos = new Point(35, 30);
-Point *start_pos = new Point(64, 48);
-Point *key_pos = new Point(32, 40);
+// start position of objects
+Point *start_pos = new Point(24, 56);
+Point *key_pos = new Point(8, 40);
 Point *computer_pos = new Point(8, 8);
-Point *door_pos = new Point(24, 24);
-Point *empty_bottle_pos = new Point(64, 24);
-Point *disarmed_trap_pos = new Point(48, 40);
-Point *green_door_pos = new Point(48, 8);
+Point *door_pos = new Point(16, 24);
+Point *empty_bottle_pos = nullptr;
+Point *disarmed_trap_pos = nullptr;
+Point *green_door_pos = new Point(72, 40);
 
+// Initialize Objects for Map
 Trap *test_trap = nullptr;
-Bottle *bottle = nullptr;
-Key *test_key = new Key(key_pos->x, key_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 44);
+Bottle *bottle = nullptr; // maybe rename to "flying_bottle"
+Key *test_key = new Key(key_pos->x, key_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 45);
 Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::down_off, (int)Direction::down);
 Door *red_door = new Door(door_pos->x, door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)Direction::left, false);
-
 Player *test_player = new Player(start_pos->x, start_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60);
-
-Map mymap = Map::load_map1(&sprite_list);
-
-Enemy *enemy = new Enemy(32, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60, Point(32, 32));
-
-//uint8_t *path_test = NULL;
-Bottle *empty_bottle = new Bottle(empty_bottle_pos->x, empty_bottle_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)BottleTextureId::not_broken);
-Trap *disarmed_trap = new Trap(disarmed_trap_pos->x, disarmed_trap_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)TrapTextureId::disarmed, false);
-Door *green_door = new Door(green_door_pos->x, green_door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, (int)Direction::down, true);
+Enemy *enemy = new Enemy(24, 24, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60, Point(64, 8));
+Bottle *empty_bottle = nullptr;
+Trap *disarmed_trap = nullptr;
+Door *green_door = new Door(green_door_pos->x, green_door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)Direction::left, true);
 
 void setup()
 {
 	gb.begin();
-	sprite_list.append_value(empty_bottle);
-	sprite_list.append_value(disarmed_trap);
+
+	// append Objects to sprite_list that was given to map
 	sprite_list.append_value(test_key);
 	sprite_list.append_value(red_door);
 	sprite_list.append_value(green_door);
@@ -129,21 +124,6 @@ void loop()
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
-		/*// path test
-    for (int i = 0; i < 80; i++)
-    {
-      gb.display.setCursor(8*(i%10), 8*(i/10));
-      gb.display.print(path_test[i]);
-    }*/
-		/*// tile_type_grid;
-    for (int i = 0; i < 10; i++)
-    {
-      for (int j = 0; j < 8; j++)
-      {
-        gb.display.setCursor(8*i, 8*j);
-        gb.display.print(mymap.tile_type_grid[i][j]);
-      }
-    }*/
 	}
 	else
 	{
