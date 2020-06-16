@@ -25,19 +25,19 @@ Point *Player::get_collision_points()
     // get collision points
     auto *points = new Point[NUM_COLLISION_POINTS]{
         // front_left
-        Point(this->position.x + 2, this->position.y),
+        Point(this->position.x + 1, this->position.y),
         // front_right
-        Point(this->position.x + this->width - 2, this->position.y),
+        Point(this->position.x + this->width - 1, this->position.y),
         // back_left
-        Point(this->position.x + 2, this->position.y + this->height),
+        Point(this->position.x + 1, this->position.y + this->height),
         // back_right
-        Point(this->position.x + this->width - 2, this->position.y + this->height),
+        Point(this->position.x + this->width - 1, this->position.y + this->height),
         // middle_left_front
-        Point(this->position.x, this->position.y + 2),
+        Point(this->position.x, this->position.y + 1),
         // middle_left_back
-        Point(this->position.x, this->position.y + this->height - 2),
+        Point(this->position.x, this->position.y + this->height - 1),
         // middle_right_front
-        Point(this->position.x + this->width, this->position.y + 2),
+        Point(this->position.x + this->width, this->position.y + 1),
         // middle_right_back
         Point(this->position.x + this->width, this->position.y + this->height - 2)};
 

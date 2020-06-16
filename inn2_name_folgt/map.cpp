@@ -1,11 +1,24 @@
+#include "texture.cpp"
 #include "sprite.cpp"
 #include "linked_list.cpp"
+#include "player.h"
+#include "enemy.h"
+#include "computer.h"
+#include "door.h"
+#include "key.h"
+#include "trap.h"
 #include "enum.h"
+#include "bottle.h"
 
 #ifndef MAP
 #define MAP
 
 #define FACTOR 8
+#define FRAME_PERIOD 2
+#define TEXTURE_WIDTH 8
+#define TEXTURE_HEIGHT 8
+#define BOTTLE_WIDTH 4
+#define BOTTLE_HEIGHT 4
 
 struct Distance_pp
 {
@@ -18,221 +31,128 @@ struct Distance_pp
 class Map
 {
 private:
-    TileType **tile_type_grid;
-    Point dimensions;
-    Point neighbors[4];
-
-    Map(int w, int h) : dimensions(w, h), neighbors{Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1)}
-    {
-        int grid_width = dimensions.x / FACTOR;
-        int grid_height = dimensions.y / FACTOR;
-
-        tile_type_grid = (TileType **)malloc(sizeof(TileType *) * grid_width);
-        for (int i = 0; i < grid_width; i++)
-        {
-            tile_type_grid[i] = (TileType *)malloc(sizeof(TileType) * grid_height);
-            for (int y = 0; y < grid_height; y++)
-            {
-                tile_type_grid[i][y] = not_solid;
-            }
-        }
-    };
+    // META DATA
+    TileType tile_type_grid[80][64];
+    Point dimensions = Point(80, 64);
+    Point neighbors[4] = { Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1) };
 
 public:
-    static Map load_map1(LinkedList<Sprite *> *ll)
+  LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
+
+  // TODO: Move the Dynamic Entities Positions into their classes
+  // DYNAMIC ENTITIES POSITIONS
+  Point *start_pos = new Point(24, 56);
+  Point *key_pos = new Point(8, 40);
+  Point *computer_pos = new Point(8, 8);
+  Point *door_pos = new Point(16, 24);
+  Point *empty_bottle_pos = nullptr;
+  Point *disarmed_trap_pos = nullptr;
+  Point *green_door_pos = new Point(72, 40);
+
+  // DYNAMIC ENTITIES
+  Trap *test_trap = nullptr;
+  Bottle *bottle = nullptr; // maybe rename to "flying_bottle"
+  Key *test_key = new Key(key_pos->x, key_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 45);
+  Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::down_off, (int)Direction::down);
+  Door *red_door = new Door(door_pos->x, door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)Direction::left, false);
+  Player *test_player = new Player(start_pos->x, start_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60);
+  Enemy *enemy = new Enemy(24, 24, TEXTURE_WIDTH, TEXTURE_HEIGHT, 80, Point(64, 8));
+  Bottle *empty_bottle = nullptr;
+  Trap *disarmed_trap = nullptr;
+  Door *green_door = new Door(green_door_pos->x, green_door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)Direction::left, true);
+
+
+    Map()
     {
-        Map map1 = Map(80, 64);
-
-        ll->append_value(Sprite::new_corner_tl(0, 0));
-        map1.tile_type_grid[0][0] = solid;
-        ll->append_value(Sprite::new_corner_tr(72, 0));
-        map1.tile_type_grid[9][0] = solid;
-        ll->append_value(Sprite::new_corner_bl(0, 56));
-        map1.tile_type_grid[0][7] = solid;
-        ll->append_value(Sprite::new_corner_br(72, 56));
-        map1.tile_type_grid[9][7] = solid;
-
-        //wand rechts
-        for (int i = 1; i < 7; i++)
-        {
-            ll->append_value(Sprite::new_wall_r(72, i * 8));
-            map1.tile_type_grid[9][i] = solid;
+        for (int i = 0; i < 80; ++i) {   // for each row
+          for (int j = 0; j < 64; ++j) { // for each column
+            tile_type_grid[i][j] = not_solid;
+          }
         }
 
-        //wand unten
-        for (int i = 1; i < 9; i++)
-        {
-            ll->append_value(Sprite::new_wall_b(i * 8, 56));
-            map1.tile_type_grid[i][7] = solid;
-        }
+        sprite_list.append_value(test_key);
+      	sprite_list.append_value(red_door);
+      	sprite_list.append_value(green_door);
+      	sprite_list.append_value(enemy);
+      	sprite_list.append_value(test_player);
+      	sprite_list.append_value(test_computer);
 
-        //wand links
-        ll->append_value(Sprite::new_wall_l(0, 8));
-        map1.tile_type_grid[0][1] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 16));
-        map1.tile_type_grid[0][2] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 24));
-        map1.tile_type_grid[0][3] = solid;
-        ll->append_value(Sprite::new_sprite(0, 32, 58));
-        map1.tile_type_grid[0][4] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 40));
-        map1.tile_type_grid[0][5] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 48));
-        map1.tile_type_grid[0][6] = solid;
-
-        ll->append_value(Sprite::new_sprite(8, 32, 19));
-        map1.tile_type_grid[1][4] = solid;
-        ll->append_value(Sprite::new_sprite(16, 32, 19));
-        map1.tile_type_grid[2][4] = solid;
-        ll->append_value(Sprite::new_sprite(24, 32, 18));
-        map1.tile_type_grid[3][4] = solid;
-
-        //wand oben
-        ll->append_value(Sprite::new_wall_t(8, 0));
-        map1.tile_type_grid[1][0] = solid;
-        ll->append_value(Sprite::new_wall_t(16, 0));
-        map1.tile_type_grid[2][0] = solid;
-        ll->append_value(Sprite::new_sprite(24, 0, 57));
-        map1.tile_type_grid[3][0] = solid;
-        ll->append_value(Sprite::new_wall_t(32, 0));
-        map1.tile_type_grid[4][0] = solid;
-        ll->append_value(Sprite::new_wall_t(40, 0));
-        map1.tile_type_grid[5][0] = solid;
-        ll->append_value(Sprite::new_wall_t(48, 0));
-        map1.tile_type_grid[6][0] = solid;
-        ll->append_value(Sprite::new_wall_t(56, 0));
-        map1.tile_type_grid[7][0] = solid;
-        ll->append_value(Sprite::new_wall_t(64, 0));
-        map1.tile_type_grid[8][0] = solid;
-        ll->append_value(Sprite::new_sprite(24, 8, 17));
-        map1.tile_type_grid[3][1] = solid;
-        ll->append_value(Sprite::new_sprite(24, 16, 5));
-        map1.tile_type_grid[3][2] = solid;
-
-        return map1;
-    }
-
-    // EWANDOS 14.06.20
-    static Map load_map2(LinkedList<Sprite *> *ll) {
-        Map map1 = Map(80, 64);
+        insert_type_at(*computer_pos, TileType::computer);
+      	insert_type_at(*door_pos, TileType::red_door_closed);
+        insert_type_at(*green_door_pos, TileType::green_door_closed);
 
         //Border right
-        ll->append_value(Sprite::new_wall_r(72, 8));
-        map1.tile_type_grid[9][1] = solid;
-        ll->append_value(Sprite::new_wall_r(72, 16));
-        map1.tile_type_grid[9][2] = solid;
-        ll->append_value(Sprite::new_wall_r(72, 24));
-        map1.tile_type_grid[9][3] = solid;
-        ll->append_value(Sprite::new_sprite(72, 32, 59));
-        map1.tile_type_grid[9][4] = solid;
-        //ll->append_value(Sprite::new_wall_r(72, 40));
-        //map1.tile_type_grid[9][5] = solid;
-        ll->append_value(Sprite::new_wall_r(72, 48));
-        map1.tile_type_grid[9][6] = solid;
+        add_component(Sprite::new_wall_r(72, 8), solid);
+        add_component(Sprite::new_wall_r(72, 16), solid);
+
+
+        add_component(Sprite::new_wall_r(72, 24), solid);
+        add_component(Sprite::new_sprite(72, 32, 59), solid);
+        add_component(Sprite::new_wall_r(72, 48), solid);
 
         //Border bottom
-        ll->append_value(Sprite::new_wall_b(8, 56));
-        map1.tile_type_grid[1][7] = solid;
-        ll->append_value(Sprite::new_wall_b(16, 56));
-        map1.tile_type_grid[2][7] = solid;
-        // ll->append_value(Sprite::new_wall_b(24, 56));
-        // map1.tile_type_grid[3][7] = solid;
-        ll->append_value(Sprite::new_wall_b(32, 56));
-        map1.tile_type_grid[4][7] = solid;
-        ll->append_value(Sprite::new_wall_b(40, 56));
-        map1.tile_type_grid[5][7] = solid;
-        ll->append_value(Sprite::new_wall_b(48, 56));
-        map1.tile_type_grid[6][7] = solid;
-        ll->append_value(Sprite::new_wall_b(56, 56));
-        map1.tile_type_grid[7][7] = solid;
-        ll->append_value(Sprite::new_wall_b(64, 56));
-        map1.tile_type_grid[8][7] = solid;
+        add_component(Sprite::new_wall_b(8, 56), solid);
+        add_component(Sprite::new_wall_b(16, 56), solid);
+        add_component(Sprite::new_wall_b(32, 56), solid);
+        add_component(Sprite::new_wall_b(40, 56), solid);
+        add_component(Sprite::new_wall_b(48, 56), solid);
+        add_component(Sprite::new_wall_b(56, 56), solid);
+        add_component(Sprite::new_wall_b(64, 56), solid);
 
         //Border left
-        ll->append_value(Sprite::new_wall_l(0, 8));
-        map1.tile_type_grid[0][1] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 16));
-        map1.tile_type_grid[0][2] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 24));
-        map1.tile_type_grid[0][3] = solid;
-        ll->append_value(Sprite::new_sprite(0, 32, 58));
-        map1.tile_type_grid[0][4] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 40));
-        map1.tile_type_grid[0][5] = solid;
-        ll->append_value(Sprite::new_wall_l(0, 48));
-        map1.tile_type_grid[0][6] = solid;
+        add_component(Sprite::new_wall_l(0, 8), solid);
+        add_component(Sprite::new_wall_l(0, 16), solid);
+        add_component(Sprite::new_wall_l(0, 24), solid);
+        add_component(Sprite::new_sprite(0, 32, 58), solid);
+        add_component(Sprite::new_wall_l(0, 40), solid);
+        add_component(Sprite::new_wall_l(0, 48), solid);
 
         //Border Top
-        ll->append_value(Sprite::new_wall_t(8, 0));
-        map1.tile_type_grid[1][0] = solid;
-        ll->append_value(Sprite::new_sprite(16, 0, 57));
-        map1.tile_type_grid[2][0] = solid;
-        ll->append_value(Sprite::new_wall_t(24, 0));
-        map1.tile_type_grid[3][0] = solid;
-        ll->append_value(Sprite::new_wall_t(32, 0));
-        map1.tile_type_grid[4][0] = solid;
-        ll->append_value(Sprite::new_wall_t(40, 0));
-        map1.tile_type_grid[5][0] = solid;
-        ll->append_value(Sprite::new_wall_t(48, 0));
-        map1.tile_type_grid[6][0] = solid;
-        ll->append_value(Sprite::new_sprite(56, 0, 57));
-        map1.tile_type_grid[7][0] = solid;
-        ll->append_value(Sprite::new_wall_t(64, 0));
-        map1.tile_type_grid[8][0] = solid;
+        add_component(Sprite::new_wall_t(8, 0), solid);
+        add_component(Sprite::new_sprite(16, 0, 57), solid);
+        add_component(Sprite::new_wall_t(24, 0), solid);
+        add_component(Sprite::new_wall_t(32, 0), solid);
+        add_component(Sprite::new_wall_t(40, 0), solid);
+        add_component(Sprite::new_wall_t(48, 0), solid);
+        add_component(Sprite::new_sprite(56, 0, 57), solid);
+        add_component(Sprite::new_wall_t(64, 0), solid);
 
         // Border Corners
-        ll->append_value(Sprite::new_corner_tl(0, 0));
-        map1.tile_type_grid[0][0] = solid;
-        ll->append_value(Sprite::new_corner_tr(72, 0));
-        map1.tile_type_grid[9][0] = solid;
-        ll->append_value(Sprite::new_corner_bl(0, 56));
-        map1.tile_type_grid[0][7] = solid;
-        ll->append_value(Sprite::new_corner_br(72, 56));
-        map1.tile_type_grid[9][7] = solid;
+        add_component(Sprite::new_corner_tl(0, 0), solid);
+        add_component(Sprite::new_corner_tr(72, 0), solid);
+        add_component(Sprite::new_corner_bl(0, 56), solid);
+        add_component(Sprite::new_corner_br(72, 56), solid);
 
         // Inner Walls
-        ll->append_value(Sprite::new_sprite(16, 8, 17));
-        map1.tile_type_grid[2][1] = solid;
+        add_component(Sprite::new_sprite(16, 8, 17), solid);
 
-        ll->append_value(Sprite::new_sprite(16, 16, 8));
-        map1.tile_type_grid[2][2] = solid;
-        ll->append_value(Sprite::new_sprite(24, 16, 19));
-        map1.tile_type_grid[3][2] = solid;
-        ll->append_value(Sprite::new_sprite(32, 16, 18));
-        map1.tile_type_grid[4][2] = solid;
-        ll->append_value(Sprite::new_sprite(48, 16, 7));
-        map1.tile_type_grid[6][2] = solid;
-        ll->append_value(Sprite::new_sprite(56, 16, 3));
-        map1.tile_type_grid[7][2] = solid;
+        add_component(Sprite::new_sprite(16, 16, 8), solid);
+        add_component(Sprite::new_sprite(24, 16, 19), solid);
+        add_component(Sprite::new_sprite(32, 16, 18), solid);
+        add_component(Sprite::new_sprite(48, 16, 7), solid);
+        add_component(Sprite::new_sprite(56, 16, 3), solid);
 
-        ll->append_value(Sprite::new_sprite(8, 32, 19));
-        map1.tile_type_grid[1][4] = solid;
-        ll->append_value(Sprite::new_sprite(16, 32, 23));
-        map1.tile_type_grid[2][4] = solid;
-        ll->append_value(Sprite::new_sprite(24, 32, 19));
-        map1.tile_type_grid[3][4] = solid;
-        ll->append_value(Sprite::new_sprite(32, 32, 19));
-        map1.tile_type_grid[4][4] = solid;
-        ll->append_value(Sprite::new_sprite(40, 32, 16));
-        map1.tile_type_grid[5][4] = solid;
-        ll->append_value(Sprite::new_sprite(48, 32, 18));
-        map1.tile_type_grid[6][4] = solid;
-        ll->append_value(Sprite::new_sprite(64, 32, 7));
-        map1.tile_type_grid[8][4] = solid;
+        add_component(Sprite::new_sprite(8, 32, 19), solid);
+        add_component(Sprite::new_sprite(16, 32, 23), solid);
+        add_component(Sprite::new_sprite(24, 32, 19), solid);
+        add_component(Sprite::new_sprite(32, 32, 19), solid);
+        add_component(Sprite::new_sprite(40, 32, 16), solid);
+        add_component(Sprite::new_sprite(48, 32, 18), solid);
+        add_component(Sprite::new_sprite(64, 32, 7), solid);
 
-        ll->append_value(Sprite::new_sprite(16, 40, 5));
-        map1.tile_type_grid[2][5] = solid;
-        ll->append_value(Sprite::new_sprite(40, 40, 5));
-        map1.tile_type_grid[5][5] = solid;
+        add_component(Sprite::new_sprite(16, 40, 5), solid);
+        add_component(Sprite::new_sprite(40, 40, 5), solid);
 
-        ll->append_value(Sprite::new_sprite(56, 8, 17));
-        map1.tile_type_grid[7][1] = solid;
-
-
-        return map1;
-    }
+        add_component(Sprite::new_sprite(56, 8, 17), solid);
+    };
 
     ~Map(){};
+
+    void add_component(Sprite* sprite, TileType type) {
+      sprite_list.append_value(sprite);
+      Point pos = sprite->get_position() / FACTOR;
+      tile_type_grid[pos.x][pos.y] = type;
+    }
 
     // inserts a new object at the given position
     // and sets the type in the tile_type_grid
