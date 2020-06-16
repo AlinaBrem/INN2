@@ -1,24 +1,20 @@
-#include "texture.cpp"
+
 #include "sprite.cpp"
 #include "linked_list.cpp"
+#include "enum.h"
+#include "bottle.h"
+#include "texture.cpp"
 #include "player.h"
 #include "enemy.h"
 #include "computer.h"
 #include "door.h"
 #include "key.h"
 #include "trap.h"
-#include "enum.h"
-#include "bottle.h"
 
 #ifndef MAP
 #define MAP
 
 #define FACTOR 8
-#define FRAME_PERIOD 2
-#define TEXTURE_WIDTH 8
-#define TEXTURE_HEIGHT 8
-#define BOTTLE_WIDTH 4
-#define BOTTLE_HEIGHT 4
 
 struct Distance_pp
 {
@@ -41,25 +37,25 @@ public:
 
   // TODO: Move the Dynamic Entities Positions into their classes
   // DYNAMIC ENTITIES POSITIONS
-  Point *start_pos = new Point(24, 56);
-  Point *key_pos = new Point(8, 40);
-  Point *computer_pos = new Point(8, 8);
-  Point *door_pos = new Point(16, 24);
+  Point *start_pos = nullptr;
+  Point *key_pos = nullptr;
+  Point *computer_pos = nullptr;
+  Point *door_pos = nullptr;
   Point *empty_bottle_pos = nullptr;
   Point *disarmed_trap_pos = nullptr;
-  Point *green_door_pos = new Point(72, 40);
+  Point *green_door_pos = nullptr;
 
   // DYNAMIC ENTITIES
   Trap *test_trap = nullptr;
   Bottle *bottle = nullptr; // maybe rename to "flying_bottle"
-  Key *test_key = new Key(key_pos->x, key_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 45);
-  Computer *test_computer = new Computer(computer_pos->x, computer_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::down_off, (int)Direction::down);
-  Door *red_door = new Door(door_pos->x, door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)Direction::left, false);
-  Player *test_player = new Player(start_pos->x, start_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60);
-  Enemy *enemy = new Enemy(24, 24, TEXTURE_WIDTH, TEXTURE_HEIGHT, 80, Point(64, 8));
+  Key *test_key = nullptr;
+  Computer *test_computer = nullptr;
+  Door *red_door = nullptr;
+  Player *test_player = nullptr;
+  Enemy *enemy = nullptr;
   Bottle *empty_bottle = nullptr;
   Trap *disarmed_trap = nullptr;
-  Door *green_door = new Door(green_door_pos->x, green_door_pos->y, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)Direction::left, true);
+  Door *green_door = nullptr;
 
 
     Map()
@@ -69,81 +65,6 @@ public:
             tile_type_grid[i][j] = not_solid;
           }
         }
-
-        sprite_list.append_value(test_key);
-      	sprite_list.append_value(red_door);
-      	sprite_list.append_value(green_door);
-      	sprite_list.append_value(enemy);
-      	sprite_list.append_value(test_player);
-      	sprite_list.append_value(test_computer);
-
-        insert_type_at(*computer_pos, TileType::computer);
-      	insert_type_at(*door_pos, TileType::red_door_closed);
-        insert_type_at(*green_door_pos, TileType::green_door_closed);
-
-        //Border right
-        add_component(Sprite::new_wall_r(72, 8), solid);
-        add_component(Sprite::new_wall_r(72, 16), solid);
-
-
-        add_component(Sprite::new_wall_r(72, 24), solid);
-        add_component(Sprite::new_sprite(72, 32, 59), solid);
-        add_component(Sprite::new_wall_r(72, 48), solid);
-
-        //Border bottom
-        add_component(Sprite::new_wall_b(8, 56), solid);
-        add_component(Sprite::new_wall_b(16, 56), solid);
-        add_component(Sprite::new_wall_b(32, 56), solid);
-        add_component(Sprite::new_wall_b(40, 56), solid);
-        add_component(Sprite::new_wall_b(48, 56), solid);
-        add_component(Sprite::new_wall_b(56, 56), solid);
-        add_component(Sprite::new_wall_b(64, 56), solid);
-
-        //Border left
-        add_component(Sprite::new_wall_l(0, 8), solid);
-        add_component(Sprite::new_wall_l(0, 16), solid);
-        add_component(Sprite::new_wall_l(0, 24), solid);
-        add_component(Sprite::new_sprite(0, 32, 58), solid);
-        add_component(Sprite::new_wall_l(0, 40), solid);
-        add_component(Sprite::new_wall_l(0, 48), solid);
-
-        //Border Top
-        add_component(Sprite::new_wall_t(8, 0), solid);
-        add_component(Sprite::new_sprite(16, 0, 57), solid);
-        add_component(Sprite::new_wall_t(24, 0), solid);
-        add_component(Sprite::new_wall_t(32, 0), solid);
-        add_component(Sprite::new_wall_t(40, 0), solid);
-        add_component(Sprite::new_wall_t(48, 0), solid);
-        add_component(Sprite::new_sprite(56, 0, 57), solid);
-        add_component(Sprite::new_wall_t(64, 0), solid);
-
-        // Border Corners
-        add_component(Sprite::new_corner_tl(0, 0), solid);
-        add_component(Sprite::new_corner_tr(72, 0), solid);
-        add_component(Sprite::new_corner_bl(0, 56), solid);
-        add_component(Sprite::new_corner_br(72, 56), solid);
-
-        // Inner Walls
-        add_component(Sprite::new_sprite(16, 8, 17), solid);
-
-        add_component(Sprite::new_sprite(16, 16, 8), solid);
-        add_component(Sprite::new_sprite(24, 16, 19), solid);
-        add_component(Sprite::new_sprite(32, 16, 18), solid);
-        add_component(Sprite::new_sprite(48, 16, 7), solid);
-        add_component(Sprite::new_sprite(56, 16, 3), solid);
-
-        add_component(Sprite::new_sprite(8, 32, 19), solid);
-        add_component(Sprite::new_sprite(16, 32, 23), solid);
-        add_component(Sprite::new_sprite(24, 32, 19), solid);
-        add_component(Sprite::new_sprite(32, 32, 19), solid);
-        add_component(Sprite::new_sprite(40, 32, 16), solid);
-        add_component(Sprite::new_sprite(48, 32, 18), solid);
-        add_component(Sprite::new_sprite(64, 32, 7), solid);
-
-        add_component(Sprite::new_sprite(16, 40, 5), solid);
-        add_component(Sprite::new_sprite(40, 40, 5), solid);
-
-        add_component(Sprite::new_sprite(56, 8, 17), solid);
     };
 
     ~Map(){};
