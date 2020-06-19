@@ -1,35 +1,30 @@
 #include <Gamebuino-Meta.h>
 #include "map_factory.h"
 
-#define EFFECT_DURATION 24
-
-Map* m = map_factory::get_map_1();
-
+Map* m;
 bool gameOver = false;
-bool hacking = false;
-int effect_counter = 0;
 
 void setup()
 {
 	gb.begin();
+	m = map_factory::get_map_1();
 	m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
 	//path_test = m->get_path_grid(Point(8, 40));
 }
 
 void loop()
 {
+	// Debug for Refactoring!
+	uint16_t ram2 = gb.getFreeRam();
+	gb.display.print("RAM:");
+	gb.display.println(ram2);
 
-	// EFFECTS if player hacks or gets caught
-	if (gameOver && effect_counter < EFFECT_DURATION) {
-		effect_counter += 1;
-		gb.lights.fill(RED);
-	} else if (hacking && effect_counter < EFFECT_DURATION) {
-		effect_counter += 1;
-		gb.lights.fill(GREEN);
-	} else {
-		gb.lights.fill(BLACK);
-		effect_counter = 0;
-		hacking = false;
+	// EFFECTS if player gets caught
+	if (gameOver) {
+		delete m;
+		m = map_factory::get_map_1();
+		m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
+		gameOver = false;
 	}
 
 	gb.waitForUpdate();
@@ -91,6 +86,7 @@ void loop()
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
+		gameOver = true;
 	}
 	else
 	{
@@ -111,7 +107,7 @@ void loop()
 
 			if (m->is_type_at(collision_points[i], TileType::green_door_open))
 			{
-				hacking = true;
+				// Player is hackin!
 			}
 
 			// check if player is colliding with a key
@@ -185,7 +181,7 @@ void loop()
 				m->test_computer->set_is_on(true);
 				m->test_player->set_is_interacting(true);
 
-				hacking = true;
+				// player is hacking!!
 
 				// open green door
 				m->insert_type_at(*m->green_door_pos, TileType::green_door_open);

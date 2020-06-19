@@ -57,7 +57,6 @@ public:
   Trap *disarmed_trap = nullptr;
   Door *green_door = nullptr;
 
-
     Map()
     {
         for (int i = 0; i < 80; ++i) {   // for each row
@@ -67,7 +66,35 @@ public:
         }
     };
 
-    ~Map(){};
+    ~Map(){
+      delete this->start_pos;
+      delete this->key_pos;
+      delete this->computer_pos;
+      delete this->door_pos;
+      delete this->empty_bottle_pos;
+      delete this->disarmed_trap_pos;
+      delete this->green_door_pos;
+
+      delete this->test_trap;
+      delete this->bottle;
+      delete this->test_key;
+      delete this->test_computer;
+      delete this->red_door;
+      delete this->test_player;
+      delete this->enemy;
+      delete this->empty_bottle;
+      delete this->disarmed_trap;
+      delete this->green_door;
+
+      for (int i = 0; i < 80; ++i) {
+          delete tile_type_grid[i];
+      }
+      delete tile_type_grid;
+
+      this->sprite_list.delete_list();
+
+      delete[] neighbors;
+    };
 
     void add_component(Sprite* sprite, TileType type) {
       sprite_list.append_value(sprite);
