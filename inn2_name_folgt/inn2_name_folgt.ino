@@ -1,6 +1,7 @@
 #include <Gamebuino-Meta.h>
 #include "map_factory.h"
 
+// globals that monitor the overall game progress
 Map* m;
 bool gameOver = false;
 bool nextLevel = false;
@@ -9,8 +10,6 @@ void setup()
 {
 	gb.begin();
 	m = map_factory::get_map_1();
-	m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
-	//path_test = m->get_path_grid(Point(8, 40));
 }
 
 void loop()
@@ -23,8 +22,7 @@ void loop()
 	// EFFECTS if player gets caught
 	if (gameOver) {
 		delete m;
-		m = map_factory::get_map_1();
-		m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
+		m = map_factory::get_map_1(); // currently loads same level again...
 		gameOver = false;
 	}
 
@@ -32,7 +30,6 @@ void loop()
 	if (nextLevel) {
 		delete m;
 		m = map_factory::get_map_1(); // currently loads same level again...
-		m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
 		nextLevel = false;
 	}
 

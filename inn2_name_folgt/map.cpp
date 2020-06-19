@@ -15,6 +15,11 @@
 #define MAP
 
 #define FACTOR 8
+#define FRAME_PERIOD 2
+#define TEXTURE_WIDTH 8
+#define TEXTURE_HEIGHT 8
+#define BOTTLE_WIDTH 4
+#define BOTTLE_HEIGHT 4
 
 struct Distance_pp
 {
@@ -35,7 +40,6 @@ private:
 public:
   LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
 
-  // TODO: Move the Dynamic Entities Positions into their classes
   // DYNAMIC ENTITIES POSITIONS
   Point *start_pos = nullptr;
   Point *key_pos = nullptr;
@@ -95,12 +99,6 @@ public:
 
       delete[] neighbors;
     };
-
-    void add_component(Sprite* sprite, TileType type) {
-      sprite_list.append_value(sprite);
-      Point pos = sprite->get_position() / FACTOR;
-      tile_type_grid[pos.x][pos.y] = type;
-    }
 
     // inserts a new object at the given position
     // and sets the type in the tile_type_grid
@@ -325,6 +323,184 @@ public:
         }
 
         return true;
+    }
+
+
+    /*
+    * *****************************
+    * FUNCTIONS FOR BUILDING A MAP
+    * *****************************
+    * All functions for map building expect x,y values
+    * x ranges from 0 to 9
+    * y ranges from 0 to 7
+    * that's because usually we only add one sprite per 8x8 pixel field
+    */
+
+
+    /* Adds all entities to the sprite list.*/
+    void finalize()
+    {
+      if (this->test_trap != nullptr)
+        this->sprite_list.append_value(this->test_trap);
+
+      if (this->bottle != nullptr)
+        this->sprite_list.append_value(this->bottle);
+
+      if (this->test_key != nullptr)
+        this->sprite_list.append_value(this->test_key);
+
+      if (this->test_computer != nullptr)
+        this->sprite_list.append_value(this->test_computer);
+
+      if (this->red_door != nullptr)
+    	 this->sprite_list.append_value(this->red_door);
+
+      if (this->test_player != nullptr)
+    	 this->sprite_list.append_value(this->test_player);
+
+      if (this->enemy != nullptr)
+    	 this->sprite_list.append_value(this->enemy);
+
+      if (this->empty_bottle != nullptr)
+    	 this->sprite_list.append_value(this->empty_bottle);
+
+      if (this->disarmed_trap != nullptr)
+    	 this->sprite_list.append_value(this->disarmed_trap);
+
+      if (this->green_door != nullptr)
+        this->sprite_list.append_value(this->green_door);
+
+      // the enemy needs to be added at least, so that the path algorithm
+      // can take the entities for evaluation
+      if (this->enemy != nullptr)
+        this->enemy->set_path_grid(get_path_grid(this->enemy->get_next_target()));
+    }
+
+    // so prevent the redundant declaration of "solid" in the tile_type_grid
+    // there is a function to add solids
+    void add_solid(Sprite* sprite)
+    {
+      sprite_list.append_value(sprite);
+      Point pos = sprite->get_position() / FACTOR;
+      tile_type_grid[pos.x][pos.y] = solid;
+    }
+
+    void set_start_position(int x, int y)
+    {
+      this->start_pos = new Point(x * FACTOR, y * FACTOR);
+      this->test_player = new Player(x * FACTOR,  y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, 60);
+    }
+
+    void set_enemy_path(int start_x, int start_y, int goal_x, int goal_y) {
+      this->enemy = new Enemy(start_x * FACTOR, start_y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, 80, Point(goal_x * FACTOR, goal_y * FACTOR));
+    }
+
+    void set_key(int x, int y)
+    {
+      this->key_pos = new Point(x * FACTOR, y * FACTOR);
+      this->test_key = new Key(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, 45);
+    }
+
+    // to provide a cleaner call of the function the paremeters only
+    // takes one Direction enum to evaluate the sprite type
+    void set_computer(int x, int y, Direction dir)
+    {
+      this->computer_pos = new Point(x * FACTOR, y * FACTOR);
+
+      switch (dir)
+      {
+      case Direction::up:
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::up_off, (int)dir);
+        break;
+
+      case Direction::down:
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::down_off, (int)dir);
+        break;
+
+      case Direction::left:
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::left_off, (int)dir);
+        break;
+
+      case Direction::right:
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::right_off, (int)dir);
+        break;
+
+      default:
+        break;
+      }
+
+      insert_type_at(*this->computer_pos, TileType::computer);
+    }
+
+    // to provide a cleaner call of the function the paremeters only
+    // takes one Direction enum to evaluate the sprite type
+    void set_red_door(int x, int y, Direction dir)
+    {
+      this->door_pos = new Point(x * FACTOR, y * FACTOR);
+
+      switch (dir)
+      {
+      case Direction::up:
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::up_closed, (int)dir, false);
+        break;
+
+      case Direction::down:
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::up_closed, (int)dir, false);
+        break;
+
+      case Direction::left:
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)dir, false);
+        break;
+
+      case Direction::right:
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)dir, false);
+        break;
+
+      default:
+        break;
+      }
+
+      this->insert_type_at(*this->door_pos, TileType::red_door_closed);
+    }
+
+    // to provide a cleaner call of the function the paremeters only
+    // takes one Direction enum to evaluate the sprite type
+    void set_green_door(int x, int y, Direction dir) {
+      this->green_door_pos = new Point(x * FACTOR, y * FACTOR);
+
+      switch (dir)
+      {
+      case Direction::up:
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, (int)dir, false);
+        break;
+
+      case Direction::down:
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, (int)dir, false);
+        break;
+
+      case Direction::left:
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)dir, false);
+        break;
+
+      case Direction::right:
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)dir, false);
+        break;
+
+      default:
+        break;
+      }
+
+      this->insert_type_at(*this->green_door_pos, TileType::green_door_closed);
+    }
+
+    void set_bottle(int x, int y) {
+        this->empty_bottle_pos = new Point(x * FACTOR, y * FACTOR);
+        this->empty_bottle = new Bottle(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)BottleTextureId::not_broken);
+    }
+
+    void set_disarmed_trap(int x, int y) {
+      this->disarmed_trap_pos = new Point(x * FACTOR, y * FACTOR);
+      this->disarmed_trap = new Trap(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)TrapTextureId::disarmed, false);
     }
 };
 #endif

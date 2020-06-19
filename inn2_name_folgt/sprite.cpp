@@ -86,7 +86,7 @@ public:
 
     static Sprite *new_sprite(int x, int y, int t)
     {
-        return new Sprite(x, y, 8, 8, t);
+        return new Sprite(x * 8, y * 8, 8, 8, t);
     }
 
     static Sprite *new_corner_tl(int x, int y) // ul ... TopLeft usw.
