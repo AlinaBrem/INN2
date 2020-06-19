@@ -3,6 +3,7 @@
 
 Map* m;
 bool gameOver = false;
+bool nextLevel = false;
 
 void setup()
 {
@@ -14,7 +15,7 @@ void setup()
 
 void loop()
 {
-	// Debug for Refactoring!
+	// shows the ram to monitor memory leak
 	uint16_t ram2 = gb.getFreeRam();
 	gb.display.print("RAM:");
 	gb.display.println(ram2);
@@ -25,6 +26,14 @@ void loop()
 		m = map_factory::get_map_1();
 		m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
 		gameOver = false;
+	}
+
+	// EFFECTS if the player can can escape
+	if (nextLevel) {
+		delete m;
+		m = map_factory::get_map_1(); // currently loads same level again...
+		m->enemy->set_path_grid(m->get_path_grid(m->enemy->get_next_target()));
+		nextLevel = false;
 	}
 
 	gb.waitForUpdate();
@@ -107,7 +116,7 @@ void loop()
 
 			if (m->is_type_at(collision_points[i], TileType::green_door_open))
 			{
-				// Player is hackin!
+				nextLevel = true;
 			}
 
 			// check if player is colliding with a key
@@ -180,8 +189,6 @@ void loop()
 			{
 				m->test_computer->set_is_on(true);
 				m->test_player->set_is_interacting(true);
-
-				// player is hacking!!
 
 				// open green door
 				m->insert_type_at(*m->green_door_pos, TileType::green_door_open);
