@@ -92,7 +92,6 @@ void loop()
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
 		gb.display.println(ram);
-		gameOver = true;
 	}
 	else
 	{
