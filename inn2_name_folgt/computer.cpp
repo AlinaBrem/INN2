@@ -1,15 +1,20 @@
 #include "Computer.h"
 
-Computer::Computer(int x, int y, int w, int h, int t, int direction) : Sprite(x, y, w, h, t)
+Computer::Computer(int x, int y, int w, int h, int t, Direction ndirection) : Sprite(x, y, w, h, t)
 {
   this->width = w;
   this->height = h;
 
-  this->direction = (Direction)direction;
+  this->direction = ndirection;
   this->is_on = false;
 
   this->set_interaction_point();
 };
+
+Computer::~Computer()
+{
+  delete this->interaction_point;  
+}
 
 void Computer::set_interaction_point()
 {

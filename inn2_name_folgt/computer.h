@@ -13,14 +13,14 @@ private:
   bool is_colliding;
   bool is_on;
 
-  Point *interaction_point;
+  Point *interaction_point = nullptr;
 
   Direction direction;
 
 public:
-  Computer(int x, int y, int w, int h, int t, int direction);
+  Computer(int x, int y, int w, int h, int t, Direction ndirection);
 
-  ~Computer() = default;
+  ~Computer();
 
   Point *get_interaction_point();
 

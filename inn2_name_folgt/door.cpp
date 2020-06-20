@@ -1,9 +1,9 @@
 #include "door.h"
 
-Door::Door(int x, int y, int w, int h, int t, int direction, bool is_greend_door) : Sprite(x, y, w, h, t)
+Door::Door(int x, int y, int w, int h, int t, Direction ndirection, bool is_greend_door) : Sprite(x, y, w, h, t)
 {
   this->is_locked = true;
-  this->direction = (Direction)direction;
+  this->direction = ndirection;
   this->is_green_door = is_green_door;
 };
 

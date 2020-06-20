@@ -5,7 +5,7 @@
 Map* m;
 bool gameOver = false;
 bool nextLevel = false;
-
+void draw();
 void setup()
 {
 	gb.begin();
@@ -87,11 +87,20 @@ void loop()
 	// debug
 	if (gb.buttons.repeat(BUTTON_MENU, 0))
 	{
-		gb.display.drawImage(0, 0, my_img_buf);
+  // tile_type_grid;
+    for (int i = 0; i < 10; i++)
+    {
+      for (int j = 0; j < 8; j++)
+      {
+        gb.display.setCursor(8*i, 8*j);
+        gb.display.print(m->tile_type_grid[i][j]);
+      }
+    }
+		/*gb.display.drawImage(0, 0, my_img_buf);
 
 		uint16_t ram = gb.getFreeRam();
 		gb.display.print("RAM:");
-		gb.display.println(ram);
+		gb.display.println(ram);*/
 	}
 	else
 	{
@@ -259,10 +268,10 @@ void loop()
 
 void draw()
 {
-	auto it = m->sprite_list.get_Iterator();
-	while (it.has_next())
-	{
-		Sprite **temp = it.get_next();
-		(*temp)->draw();
-	}
+  auto it = m->sprite_list.get_Iterator();
+  while (it.has_next())
+  {
+    Sprite **temp = it.get_next();
+    (*temp)->draw();
+  }
 }

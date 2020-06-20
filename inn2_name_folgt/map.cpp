@@ -33,13 +33,14 @@ class Map
 {
 private:
     // META DATA
-    TileType tile_type_grid[80][64];
     Point dimensions = Point(80, 64);
     Point neighbors[4] = { Point(-1, 0), Point(0, -1), Point(1, 0), Point(0, 1) };
 
 public:
   LinkedList<Sprite *> sprite_list = LinkedList<Sprite *>();
 
+  TileType **tile_type_grid;
+  
   // DYNAMIC ENTITIES POSITIONS
   Point *start_pos = nullptr;
   Point *key_pos = nullptr;
@@ -63,9 +64,11 @@ public:
 
     Map()
     {
-        for (int i = 0; i < 80; ++i) {   // for each row
-          for (int j = 0; j < 64; ++j) { // for each column
-            tile_type_grid[i][j] = not_solid;
+        tile_type_grid = new TileType*[dimensions.x/FACTOR];
+        for (int x = 0; x < (dimensions.x/FACTOR) ; x++) {   // for each row
+          tile_type_grid[x] = new TileType[dimensions.y/FACTOR];
+          for (int y = 0; y < (dimensions.y/FACTOR); y++) { // for each column
+            tile_type_grid[x][y] = not_solid;
           }
         }
     };
@@ -78,26 +81,20 @@ public:
       delete this->empty_bottle_pos;
       delete this->disarmed_trap_pos;
       delete this->green_door_pos;
-
-      delete this->test_trap;
-      delete this->bottle;
-      delete this->test_key;
-      delete this->test_computer;
-      delete this->red_door;
-      delete this->test_player;
-      delete this->enemy;
-      delete this->empty_bottle;
-      delete this->disarmed_trap;
-      delete this->green_door;
-
-      for (int i = 0; i < 80; ++i) {
-          delete tile_type_grid[i];
+      
+      for (int x = 0; x < (dimensions.x/FACTOR); x++) {
+          delete[] tile_type_grid[x];
       }
-      delete tile_type_grid;
+      delete[] this->tile_type_grid;
 
+      auto it = this->sprite_list.get_Iterator();
+      while (it.has_next())
+      {
+        Sprite **temp = it.get_next();
+        delete (*temp);
+      }
       this->sprite_list.delete_list();
 
-      delete[] neighbors;
     };
 
     // inserts a new object at the given position
@@ -410,19 +407,19 @@ public:
       switch (dir)
       {
       case Direction::up:
-        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::up_off, (int)dir);
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::up_off, dir);
         break;
 
       case Direction::down:
-        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::down_off, (int)dir);
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::down_off, dir);
         break;
 
       case Direction::left:
-        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::left_off, (int)dir);
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::left_off, dir);
         break;
 
       case Direction::right:
-        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::right_off, (int)dir);
+        this->test_computer = new Computer(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)ComputerTextureId::right_off, dir);
         break;
 
       default:
@@ -441,19 +438,19 @@ public:
       switch (dir)
       {
       case Direction::up:
-        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::up_closed, (int)dir, false);
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::up_closed, dir, false);
         break;
 
       case Direction::down:
-        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::up_closed, (int)dir, false);
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::up_closed, dir, false);
         break;
 
       case Direction::left:
-        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)dir, false);
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, dir, false);
         break;
 
       case Direction::right:
-        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, (int)dir, false);
+        this->red_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)RedDoorTextureId::left_closed, dir, false);
         break;
 
       default:
@@ -471,19 +468,19 @@ public:
       switch (dir)
       {
       case Direction::up:
-        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, (int)dir, false);
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, dir, false);
         break;
 
       case Direction::down:
-        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, (int)dir, false);
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::up_closed, dir, false);
         break;
 
       case Direction::left:
-        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)dir, false);
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, dir, false);
         break;
 
       case Direction::right:
-        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, (int)dir, false);
+        this->green_door = new Door(x * FACTOR, y * FACTOR, TEXTURE_WIDTH, TEXTURE_HEIGHT, (int)GreenDoorTextureId::left_closed, dir, false);
         break;
 
       default:
