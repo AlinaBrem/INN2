@@ -27,19 +27,19 @@ Point *Player::get_collision_points()
         // front_left
         Point(this->position.x + 1, this->position.y),
         // front_right
-        Point(this->position.x + this->width - 1, this->position.y),
+        Point(this->position.x + this->width - 2, this->position.y),
         // back_left
-        Point(this->position.x + 1, this->position.y + this->height),
+        Point(this->position.x + 1, this->position.y + this->height - 1),
         // back_right
-        Point(this->position.x + this->width - 1, this->position.y + this->height),
+        Point(this->position.x + this->width - 2, this->position.y + this->height - 1),
         // middle_left_front
         Point(this->position.x, this->position.y + 1),
         // middle_left_back
-        Point(this->position.x, this->position.y + this->height - 1),
+        Point(this->position.x, this->position.y + this->height - 2),
         // middle_right_front
-        Point(this->position.x + this->width, this->position.y + 1),
+        Point(this->position.x + this->width - 1, this->position.y + 1),
         // middle_right_back
-        Point(this->position.x + this->width, this->position.y + this->height - 2)};
+        Point(this->position.x + this->width - 1, this->position.y + this->height - 2)};
 
     return points;
 }
