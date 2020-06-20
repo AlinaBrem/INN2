@@ -15,6 +15,10 @@ Enemy::Enemy(int x, int y, int w, int h, int t, Point b) : Sprite(x, y, w, h, t)
   this->stun_counter = 0;
 };
 
+Enemy::~Enemy()
+{
+  delete [] this->path_grid;
+}
 void Enemy::set_stunned()
 {
   this->stun_counter = 75; //3 sek

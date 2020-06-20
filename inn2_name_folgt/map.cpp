@@ -255,7 +255,6 @@ public:
                 }
             }
         }
-
         return path_grid;
     }
 

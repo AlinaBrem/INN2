@@ -14,10 +14,6 @@ void setup()
 
 void loop()
 {
-	// shows the ram to monitor memory leak
-	uint16_t ram2 = gb.getFreeRam();
-	gb.display.print("RAM:");
-	gb.display.println(ram2);
 
 	// EFFECTS if player gets caught
 	if (gameOver) {
@@ -81,6 +77,7 @@ void loop()
 	if (m->enemy->get_position() == m->test_trap->get_position() && m->test_trap->get_is_active())
 	{
 		m->sprite_list.delete_element(m->test_trap);
+    delete m->test_trap;
 		m->test_trap = nullptr;
 	}
 
@@ -131,6 +128,7 @@ void loop()
 
 				// delete key from linked list
 				m->sprite_list.delete_element(m->test_key);
+        delete m->test_key;
 				delete m->key_pos;
 				m->key_pos = nullptr;
 			}
@@ -142,6 +140,7 @@ void loop()
 
 				// delete key from linked list
 				m->sprite_list.delete_element(m->empty_bottle);
+        delete m->empty_bottle;
 				delete m->empty_bottle_pos;
 				m->empty_bottle_pos = nullptr;
 			}
@@ -154,6 +153,7 @@ void loop()
 				// delete key from linked list
 				m->sprite_list.delete_element(m->disarmed_trap);
 				delete m->disarmed_trap_pos;
+        delete m->disarmed_trap;
 				m->disarmed_trap_pos = nullptr;
 			}
 		}
@@ -256,7 +256,7 @@ void loop()
 		m->test_player->print_current_item();
 
 		m->delete_type_at(m->test_player->get_position(), TileType::player);
-		delete collision_points;
+		delete [] collision_points;
 		collision_points = nullptr;
 
 		if (!gb.buttons.repeat(BUTTON_UP, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_RIGHT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_LEFT, FRAME_PERIOD) && !gb.buttons.repeat(BUTTON_DOWN, FRAME_PERIOD) && !m->test_player->get_is_interacting())

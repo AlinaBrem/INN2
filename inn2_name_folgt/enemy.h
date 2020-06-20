@@ -26,7 +26,7 @@ private:
 public:
   Enemy(int x, int y, int w, int h, int t, Point b);
 
-  ~Enemy() = default;
+  ~Enemy();
 
   Point get_next_target();
 
