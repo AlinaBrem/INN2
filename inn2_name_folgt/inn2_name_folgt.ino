@@ -5,6 +5,8 @@
 Map* m;
 bool gameOver = false;
 bool nextLevel = false;
+int lvl = 1;
+
 void draw();
 void setup()
 {
@@ -19,13 +21,26 @@ void loop()
 	if (gameOver) {
 		delete m;
 		m = map_factory::get_map_1(); // currently loads same level again...
+    lvl = 1;
 		gameOver = false;
 	}
 
 	// EFFECTS if the player can can escape
 	if (nextLevel) {
 		delete m;
-		m = map_factory::get_map_1(); // currently loads same level again...
+   
+   switch(lvl)
+   {
+    case 1:m = map_factory::get_map_2(); // currently loads same level again...
+          lvl+=1;
+          break;
+    case 2:m = map_factory::get_map_3(); // currently loads same level again...
+          lvl+=1;
+          break; 
+    default:m = map_factory::get_map_1(); // currently loads same level again...
+            lvl = 1;
+            break;
+   }
 		nextLevel = false;
 	}
 
