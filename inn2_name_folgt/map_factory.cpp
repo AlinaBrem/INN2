@@ -86,8 +86,8 @@ Map* map_factory::get_map_2() {
   // to set other entities like a bottle or trap
   // use the responsible funtions of the Map-Class
   map->set_start_position(4, 7);
-  map->set_key(7, 6);
-  map->set_computer(2, 6, Direction::left);
+  map->set_key(2, 6);
+  map->set_computer(7,6, Direction::right);
   map->set_red_door(2,2, Direction::down);
   map->set_green_door(9, 1, Direction::left);
   map->set_enemy_path(1, 6, 8, 5);
@@ -134,8 +134,8 @@ Map* map_factory::get_map_2() {
 
   // Inner Walls
   //top wall
-  map->add_solid(Sprite::new_sprite(1, 2, 18));
-  map->add_solid(Sprite::new_sprite(3, 2, 7));
+  map->add_solid(Sprite::new_sprite(1, 2, 19));
+  map->add_solid(Sprite::new_sprite(3, 2, 19));
   map->add_solid(Sprite::new_sprite(4, 2, 19));
   map->add_solid(Sprite::new_sprite(5, 2, 19));
   map->add_solid(Sprite::new_sprite(6, 2, 19));
@@ -246,74 +246,6 @@ Map* map_factory::get_map_3() {
   map->add_solid(Sprite::new_sprite(6, 5, 19));
   map->add_solid(Sprite::new_sprite(7, 5, 19));
  
-
-  // Needs to be called before returning the map, to wrap up every sprite
-  // in the sprite_list, elsewise the collision won't work!
-
-  
-  map->finalize();
-  return map;
-}
-
-
-// Map 4 aka map3_3
-Map* map_factory::get_map_4() {
-  Map* map = new Map();
-
-  // to set other entities like a bottle or trap
-  // use the responsible funtions of the Map-Class
-  map->set_start_position(4, 7);
-  map->set_key(7, 6);
-  map->set_computer(1, 1, Direction::left);
-  map->set_red_door(2,6, Direction::down);
-  map->set_green_door(9, 1, Direction::left);
-  map->set_enemy_path(1, 6, 8, 5);
-
-  //Border right
- 
-  map->add_solid(Sprite::new_wall_r(9, 1));
-  map->add_solid(Sprite::new_wall_r(9, 2));
-  map->add_solid(Sprite::new_wall_r(9, 3));
-  map->add_solid(Sprite::new_sprite(9, 4, 59));
-  map->add_solid(Sprite::new_wall_r(9, 5));
-  map->add_solid(Sprite::new_wall_r(9, 6));
-  map->add_solid(Sprite::new_wall_r(9, 7));
-
-  //Border bottom
-  map->add_solid(Sprite::new_wall_b(1, 7));
-  map->add_solid(Sprite::new_wall_b(2, 7));
-  map->add_solid(Sprite::new_wall_b(3, 7));
-  map->add_solid(Sprite::new_sprite(4, 7, 56));
-  map->add_solid(Sprite::new_wall_b(5, 7));
-  map->add_solid(Sprite::new_wall_b(6, 7));
-  map->add_solid(Sprite::new_wall_b(7, 7));
-  map->add_solid(Sprite::new_wall_b(8, 7));
-
-  //Border left
-  map->add_solid(Sprite::new_wall_l(0, 1));
-  map->add_solid(Sprite::new_wall_l(0, 2));
-  map->add_solid(Sprite::new_sprite(0, 3, 58));
-  map->add_solid(Sprite::new_wall_l(0, 4));
-  map->add_solid(Sprite::new_wall_l(0, 6));
-
-  //Border Top
-  map->add_solid(Sprite::new_wall_t(1, 0));
-  map->add_solid(Sprite::new_wall_t(2, 0));
-  map->add_solid(Sprite::new_sprite(3, 0, 57));
-  map->add_solid(Sprite::new_wall_t(4, 0));
-  map->add_solid(Sprite::new_wall_t(5, 0));
-  map->add_solid(Sprite::new_sprite(6, 0, 57));
-  map->add_solid(Sprite::new_wall_t(7, 0));
-  map->add_solid(Sprite::new_wall_t(8, 0));
-
-  // Border Corners
-  map->add_solid(Sprite::new_corner_tl(0, 0));
-  map->add_solid(Sprite::new_corner_tr(9, 0));
-  map->add_solid(Sprite::new_corner_bl(0, 7));
-  map->add_solid(Sprite::new_corner_br(9, 7));
-
-  // Inner Walls
-
 
   // Needs to be called before returning the map, to wrap up every sprite
   // in the sprite_list, elsewise the collision won't work!

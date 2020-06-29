@@ -5,5 +5,4 @@ public:
   static Map* get_map_1();
   static Map* get_map_2();
   static Map* get_map_3();
-  static Map* get_map_4();
 };
